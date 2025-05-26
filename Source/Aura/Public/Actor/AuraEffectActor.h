@@ -44,7 +44,7 @@ protected:
 	/** 三种持续时间政策的配置 */
 	// Instant GE Class
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Applied Effects")
-	TSubclassOf<UGameplayEffect> InstantGameplayEffectClass;
+	TArray<TSubclassOf<UGameplayEffect>> InstantGameplayEffectClassArr;
 	// 何时激活此Instant GE
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Applied Effects")
 	EEffectApplicationPolicy InstantEffectApplicationPolicy = EEffectApplicationPolicy::DoNotApply;
