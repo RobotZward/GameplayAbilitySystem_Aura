@@ -29,7 +29,7 @@ void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePropert
 void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-
+	
 	if (Attribute == GetHealthAttribute())
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("Health: %f"), NewValue)
@@ -39,6 +39,24 @@ void UAuraAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, 
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("Mana: %f"), NewValue)
 		NewValue = FMath::Clamp(NewValue, 0, GetMaxMana());
+	}
+}
+
+void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+
+	// UE_LOG(LogTemp, Warning, TEXT("PostGameplayEffectExecute"))
+	FEffectProperties Props;
+	SetEffectProperties(Data, Props);
+	
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
+	}
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		SetMana(FMath::Clamp(GetMana(),0.f,GetMaxMana()));
 	}
 }
 
@@ -88,15 +106,6 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
  			Props.TargetCharacter = Cast<ACharacter>(Props.TargetController->GetPawn());
  		}
  	}
-}
-
-void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
-{
-	Super::PostGameplayEffectExecute(Data);
-
-	// UE_LOG(LogTemp, Warning, TEXT("PostGameplayEffectExecute"))
-	FEffectProperties Props;
-	SetEffectProperties(Data, Props);
 }
 
 void UAuraAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const

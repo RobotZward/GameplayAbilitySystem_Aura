@@ -92,5 +92,6 @@ public:
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
 private:
+	// 通过PostGameplayEffectExecute，将当前执行的GE的属性保存为结构体
 	static void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props);
 };
