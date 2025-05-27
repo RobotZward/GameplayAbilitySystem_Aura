@@ -22,5 +22,5 @@ public:
 	//~ End APawn Interface.
 
 private:
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
 };
