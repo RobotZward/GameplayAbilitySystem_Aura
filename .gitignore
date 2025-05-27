@@ -5,10 +5,10 @@ Saved
 Build
 
 .idea/
-.DotSettings.user
 .vsconfig
 .vscode
 .vs
+*.DotSettings.user
 *.VC.db
 *.opensdf
 *.opendb
