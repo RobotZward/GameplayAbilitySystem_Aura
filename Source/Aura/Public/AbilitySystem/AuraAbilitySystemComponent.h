@@ -23,6 +23,6 @@ public:
 	
 protected:
 	// 绑定至OnGameplayEffectAppliedDelegateToSelf并广播FEffectAssetTags代理
-	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle);
+	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle) const;
 	
 };

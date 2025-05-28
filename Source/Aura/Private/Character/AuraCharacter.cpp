@@ -52,7 +52,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	check(AuraPlayerState);
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
 
-	// 在AuraASC中执行自定义功能：绑定Effect代理
+	// 在AuraASC中执行自定义功能：绑定OnGameplayEffectAppliedDelegateToSelf代理
 	Cast<UAuraAbilitySystemComponent>(AuraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 
 	// 完成Model、View、Controller的绑定及初始化
