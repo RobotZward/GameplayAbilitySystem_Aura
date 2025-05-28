@@ -39,7 +39,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
 
-	// 通过ApplyGameplayEffectSpecToTarget来初始化PrimaryAttribute
-	void InitializePrimaryAttributes() const;
+	// 对自身应用GE----AAuraCharacterBase
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level ) const;
+
+	// 通过ApplyGameplayEffectSpecToTarget来初始化PrimaryAttributes和SecondaryAttributes
+	void InitializeDefaultAttributes() const;
 };
