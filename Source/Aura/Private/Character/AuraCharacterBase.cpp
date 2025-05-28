@@ -52,4 +52,7 @@ void AAuraCharacterBase::InitializeDefaultAttributes() const
 	
 	check(DefaultSecondaryAttributes);
 	ApplyEffectToSelf(DefaultSecondaryAttributes, 1.f);
+
+	check(DefaultVitalAttributes);
+	ApplyEffectToSelf(DefaultVitalAttributes, 1.f);
 }
