@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayModMagnitudeCalculation.h"
-#include "UMmc_MaxMana.generated.h"
+#include "Mmc_MaxMana.generated.h"
 
 /**
  * 

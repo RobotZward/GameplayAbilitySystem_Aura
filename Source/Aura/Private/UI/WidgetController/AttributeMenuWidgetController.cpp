@@ -3,7 +3,6 @@
 
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
-#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
 
@@ -13,128 +12,36 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 
 	check(AttributeInfo);
 
-	for (auto& Pair:AuraAttributeSet->TagsToAttributesFuncPtrTemplate)
+	for (auto& Pair : AuraAttributeSet->TagsToAttributesFuncPtrTemplate)
 	{
-		FAuraAttributeInfo Info = AttributeInfo->FindAttributeInfoFromTag(Pair.Key);
-		Info.AttributeValue = Pair.Value().GetNumericValue(AuraAttributeSet);
-		AttributeInfoDelegate.Broadcast(Info);
+		const FGameplayTag Tag = Pair.Key;
+		const FGameplayAttribute Attribute = Pair.Value();
+		
+		BroadcastAttributeInfo(Tag, Attribute);
 	}
-	
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	const UAuraAttributeSet* AuraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetStrengthAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
+	for (auto& Pair : AuraAttributeSet->TagsToAttributesFuncPtrTemplate)
+	{
+		const FGameplayTag Tag = Pair.Key;
+		const FGameplayAttribute Attribute = Pair.Value();
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetIntelligenceAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Pair.Value()).AddLambda(
+			[this,Tag, Attribute](const FOnAttributeChangeData& Data)
+			{
+				BroadcastAttributeInfo(Tag, Attribute);
+			});
+	}
+}
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetResilienceAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetVigorAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetArmorAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetArmorPenetrationAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetBlockChanceAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetCriticalHitChanceAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetCriticalHitDamageAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-	
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetCriticalHitResistanceAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthRegenerationAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetManaRegenerationAttribute()).
-	AddLambda(
-		[this](const FOnAttributeChangeData& data)
-		{
-			
-		}	
-	);
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxHealthAttribute()).
-	                        AddLambda(
-		                        [this](const FOnAttributeChangeData& Data)
-		                        {
-			                        // OnMaxHealthChanged.Broadcast(Data.NewValue);
-		                        }
-	                        );
-
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxManaAttribute()).
-	                        AddLambda(
-		                        [this](const FOnAttributeChangeData& Data)
-		                        {
-			                        // OnMaxManaChanged.Broadcast(Data.NewValue);
-		                        }
-	                        );
+void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& Tag,
+                                                            const FGameplayAttribute& Attribute) const
+{
+	FAuraAttributeInfo Info = AttributeInfo->FindAttributeInfoFromTag(Tag);
+	Info.AttributeValue = Attribute.GetNumericValue(AttributeSet);
+	AttributeInfoDelegate.Broadcast(Info);
 }

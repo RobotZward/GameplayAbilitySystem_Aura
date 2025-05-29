@@ -1,7 +1,7 @@
 ﻿// Copyright HigeNeko
 
 
-#include "AbilitySystem/ModMagCalc/UMmc_MaxMana.h"
+#include "AbilitySystem/ModMagCalc/Mmc_MaxMana.h"
 
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Interaction/CombatInterface.h"
