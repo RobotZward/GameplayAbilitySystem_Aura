@@ -7,10 +7,37 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
+#include "AuraGameplayTags.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
-	
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+
+	// FAttributeSignature StrengthDelegate;
+	// StrengthDelegate.BindStatic(GetStrengthAttribute);
+	// TagsToAttributes.Add(GameplayTags.Attributes_Primary_Strength, StrengthDelegate);
+
+	/*
+	 * Primary Attributes
+	 */
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Primary_Resilience, GetResilienceAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Primary_Vigor, GetVigorAttribute);
+
+	/*
+	 * Secondary Attributes
+	 */
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_BlockChance, GetBlockChanceAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
 }
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

@@ -13,6 +13,11 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+DECLARE_DELEGATE_RetVal(FGameplayAttribute, FAttributeSignature)
+
+/*
+ * 该结构体用来在GE执行后触发的函数中保存上下文
+ */
 USTRUCT(BlueprintType)
 struct FEffectProperties
 {
@@ -49,6 +54,12 @@ struct FEffectProperties
 	ACharacter* TargetCharacter = nullptr;
 };
 
+// 别名，专用于FGameplayAttribute()
+typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+// 模板别名，可以用于任何函数签名
+template<class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 /**
  * 
  */
@@ -64,6 +75,20 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+	// 该映射保存了Attribute对应的GameplayTag以及一个静态单播委托
+	// 该委托会在构造函数中绑定到GetXXXAttribute()
+	// 可以在WidgetController中根据Tag和委托触发后返回的FGameplayAttribute获取Value
+	// 构造构造FAuraAttributeInfo后进行广播
+	TMap<FGameplayTag, FAttributeSignature> TagsToAttributes;
+
+	// 该映射与TagsToAttributes的功能相同，但键值对采用GameplayTag和拥有别名的一个函数指针（可以在类定义上方找到）
+	// 这样可以直接传入GetXXXAttribute()而不用绑定至单播委托
+	// 其声明也可以为TMap<FGameplayTag, FGameplayAttribute(*)()> TagsToAttributesFuncPtr;
+	TMap<FGameplayTag, FAttributeFuncPtr> TagsToAttributesFuncPtr;
+
+	// 与TMap<FGameplayTag, FAttributeFuncPtr> TagsToAttributesFuncPtr;相同，但使用了模板别名
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributesFuncPtrTemplate;
 
 	/*
 	 * Primary Attributes
@@ -128,7 +153,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_MaxMana, Category="Vital Attribute")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana);
-	
+
 	/*
 	 * Vital Attributes
 	 */
@@ -136,7 +161,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Health, Category="Vital Attribute")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Health);
-	
+
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Mana, Category="Vital Attribute")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);
@@ -182,10 +207,10 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
-	
+
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
-	
+
 	UFUNCTION()
 	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
 
