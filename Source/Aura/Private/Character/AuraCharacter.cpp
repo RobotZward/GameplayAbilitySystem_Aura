@@ -28,6 +28,8 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 
 	// Init ability actor info for the Server
 	InitAbilityActorInfo();
+	// 调用父类函数将StartupAbilities添加至ASC并激活
+	AddCharacterAbilities();
 }
 
 void AAuraCharacter::OnRep_PlayerState()
