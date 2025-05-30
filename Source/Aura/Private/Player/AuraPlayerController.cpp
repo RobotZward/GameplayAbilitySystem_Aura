@@ -4,14 +4,18 @@
 #include "Player/AuraPlayerController.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AuraGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Components/SplineComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+
+	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
@@ -83,6 +87,15 @@ void AAuraPlayerController::CursorTrace()
 	LastActor = ThisActor;
 	ThisActor = HitResult.GetActor();
 
+	if (ThisActor)
+	{
+		UE_LOG(LogTemp, Display, TEXT("ThisActor is valid"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("ThisActor is null"));
+	}
+
 	/*
 	 * 有以下几种情况
 	 * A. LastActor is null, ThisActor is null
@@ -133,6 +146,11 @@ void AAuraPlayerController::CursorTrace()
 
 void AAuraPlayerController::AbilityInputTagPressed(const FInputActionValue& InputActionValue, const FGameplayTag InputTag)
 {
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		bTargeting = ThisActor ? true : false;
+		bAutoRunning = false;
+	}
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& InputActionValue, const FGameplayTag InputTag)
@@ -143,8 +161,42 @@ void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& Inp
 
 void AAuraPlayerController::AbilityInputTagHeld(const FInputActionValue& InputActionValue, const FGameplayTag InputTag)
 {
-	if (GetAuraAbilitySystemComponent() == nullptr) return;
-	GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+	// 按下的不是鼠标左键，释放技能
+ 	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetAuraAbilitySystemComponent())
+		{
+			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
+		return;
+	}
+	
+	if (bTargeting)
+	{
+		// 按下的是鼠标左键，但正瞄准敌人，释放技能
+		if (GetAuraAbilitySystemComponent())
+		{
+			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
+		return;
+	}
+	else
+	{
+		// 按下的是鼠标左键，但没瞄准敌人，增加左键按下的持续时间，获取鼠标检测的位置
+		FollowTime+=GetWorld()->GetDeltaSeconds();
+
+		FHitResult HitResult;
+		if (GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
+		{
+			CacheDestination = HitResult.Location;
+		}
+
+		if (APawn* ControlledPawn = GetPawn<APawn>())
+		{
+			const FVector WorldDirection = (CacheDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(WorldDirection);
+		}
+	}
 }
 
 UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponent()

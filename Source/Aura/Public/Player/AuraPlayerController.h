@@ -13,6 +13,7 @@ struct FInputActionValue;
 class IEnemyInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
+class USplineComponent;
 
 /**
  * 
@@ -55,6 +56,20 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
-
 	UAuraAbilitySystemComponent* GetAuraAbilitySystemComponent();
+
+	/*
+	 * 点击移动的配置参数
+	 */
+	FVector CacheDestination = FVector::ZeroVector;	// 点击时缓存鼠标命中的目标
+	float FollowTime = 0.f;	// 记录鼠标按下后保持的时间
+	float ShortPressThreshold = 0.5f;	// 持续时间的阈值，超出之后就不认为进行点击移动
+	bool bAutoRunning = false;	// 每帧判断是否移动
+	bool bTargeting = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	float AutoRunAcceptanceRadius = 50.f;	// 点击移动的到点范围
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USplineComponent> Spline;
 };
