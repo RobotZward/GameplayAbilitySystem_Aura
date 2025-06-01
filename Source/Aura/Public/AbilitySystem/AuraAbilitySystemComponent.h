@@ -32,6 +32,8 @@ public:
 
 protected:
 	// 绑定至OnGameplayEffectAppliedDelegateToSelf并广播FEffectAssetTags代理
-	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec,
+	// 由于OnGameplayEffectAppliedDelegateToSelf只会在服务器调用，所以需要使用Client RPC来在服务器调用，在客户端执行
+	UFUNCTION(Client, Reliable)
+	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec,
 	                   FActiveGameplayEffectHandle ActiveEffectHandle) const;
 };

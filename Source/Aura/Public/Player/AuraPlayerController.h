@@ -44,6 +44,7 @@ private:
 	void CursorTrace();
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> ThisActor;
+	FHitResult CursorHit;
 
 	// 用于在AuraInputAction->SetupInputComponent中与InputConfig中的每一个InputAction进行绑定
 	void AbilityInputTagPressed(const FInputActionValue& InputActionValue, const FGameplayTag InputTag);
@@ -72,4 +73,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+
+	void AutoRun();
 };

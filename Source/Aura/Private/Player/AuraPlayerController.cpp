@@ -6,6 +6,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
 #include "Input/AuraInputComponent.h"
@@ -21,8 +23,32 @@ AAuraPlayerController::AAuraPlayerController()
 void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-
 	CursorTrace();
+
+	AutoRun();
+}
+
+void AAuraPlayerController::AutoRun()
+{
+	if (APawn* ControlledPawn = GetPawn<APawn>(); ControlledPawn && bAutoRunning)
+	{
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(
+			ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(
+			LocationOnSpline, ESplineCoordinateSpace::World);
+		ControlledPawn->AddMovementInput(Direction);
+
+		const float DistanceToSplinePoint = FVector::Dist(LocationOnSpline, ControlledPawn->GetActorLocation());
+		if (DistanceToSplinePoint <= AutoRunAcceptanceRadius)
+		{
+			Spline->RemoveSplinePoint(0);
+		}
+		const float DistanceToDestination = FVector::Dist(LocationOnSpline, CacheDestination);
+		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			bAutoRunning = false;
+		}
+	}
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -79,24 +105,14 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AAuraPlayerController::CursorTrace()
 {
-	FHitResult HitResult;
-	GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 
-	if (!HitResult.bBlockingHit) return;
+	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = HitResult.GetActor();
+	ThisActor = CursorHit.GetActor();
 
-	if (ThisActor)
-	{
-		UE_LOG(LogTemp, Display, TEXT("ThisActor is valid"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Display, TEXT("ThisActor is null"));
-	}
-
-	/*
+	/*/*
 	 * 有以下几种情况
 	 * A. LastActor is null, ThisActor is null
 	 *		- Do Nothing
@@ -108,7 +124,7 @@ void AAuraPlayerController::CursorTrace()
 	 *		- UnHighlight LastActor, Highlight ThisActor
 	 * E. Both actors are valid and equal
 	 *		- Do Nothing
-	 */
+	 #1#
 	if (!LastActor)
 	{
 		if (!ThisActor)
@@ -141,10 +157,17 @@ void AAuraPlayerController::CursorTrace()
 				// case E
 			}
 		}
+	}*/
+
+	if (LastActor != ThisActor)
+	{
+		if (LastActor) LastActor->UnHighlightActor();
+		if (ThisActor) ThisActor->HighlightActor();
 	}
 }
 
-void AAuraPlayerController::AbilityInputTagPressed(const FInputActionValue& InputActionValue, const FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagPressed(const FInputActionValue& InputActionValue,
+                                                   const FGameplayTag InputTag)
 {
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
@@ -153,47 +176,71 @@ void AAuraPlayerController::AbilityInputTagPressed(const FInputActionValue& Inpu
 	}
 }
 
-void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& InputActionValue, const FGameplayTag InputTag)
+void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& InputActionValue,
+                                                    const FGameplayTag InputTag)
 {
-	if (GetAuraAbilitySystemComponent() == nullptr) return;
-	GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+		return;
+	}
+
+	if (bTargeting)
+	{
+		// 按下的是鼠标左键，但正瞄准敌人，释放技能
+		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+	}
+	else
+	{
+		const APawn* ControlledPawn = GetPawn<APawn>();
+		if (FollowTime <= ShortPressThreshold && ControlledPawn)
+		{
+			// 使用FindPathToLocationSynchronously获取导航路径并将导航点添加至SplineLine
+			// 要在Project Setting->Navigation System中勾选Allow Client Side Navigation
+			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(
+				this,
+				ControlledPawn->GetActorLocation(),
+				CacheDestination))
+			{
+				Spline->ClearSplinePoints();
+
+				for (const FVector& PathPoint : NavPath->PathPoints)
+				{
+					Spline->AddSplinePoint(PathPoint, ESplineCoordinateSpace::World);
+				}
+				CacheDestination = NavPath->PathPoints.Last();
+				bAutoRunning = true;
+			}
+		}
+		FollowTime = 0.f;
+		bTargeting = false;
+	}
 }
 
 void AAuraPlayerController::AbilityInputTagHeld(const FInputActionValue& InputActionValue, const FGameplayTag InputTag)
 {
 	// 按下的不是鼠标左键，释放技能
- 	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetAuraAbilitySystemComponent())
-		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
-		}
+		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
 		return;
 	}
-	
+
 	if (bTargeting)
 	{
 		// 按下的是鼠标左键，但正瞄准敌人，释放技能
-		if (GetAuraAbilitySystemComponent())
-		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
-		}
-		return;
+		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
 	}
 	else
 	{
 		// 按下的是鼠标左键，但没瞄准敌人，增加左键按下的持续时间，获取鼠标检测的位置
-		FollowTime+=GetWorld()->GetDeltaSeconds();
+		FollowTime += GetWorld()->GetDeltaSeconds();
 
-		FHitResult HitResult;
-		if (GetHitResultUnderCursor(ECC_Visibility, false, HitResult))
-		{
-			CacheDestination = HitResult.Location;
-		}
+		if (CursorHit.bBlockingHit) CacheDestination = CursorHit.Location;
 
 		if (APawn* ControlledPawn = GetPawn<APawn>())
 		{
-			const FVector WorldDirection = (CacheDestination-ControlledPawn->GetActorLocation()).GetSafeNormal();
+			const FVector WorldDirection = (CacheDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
 			ControlledPawn->AddMovementInput(WorldDirection);
 		}
 	}
