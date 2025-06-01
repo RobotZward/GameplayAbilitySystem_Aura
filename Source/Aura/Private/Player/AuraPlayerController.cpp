@@ -81,7 +81,8 @@ void AAuraPlayerController::SetupInputComponent()
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
 
 	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
-
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::ShiftPressed);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::ShiftReleased);
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed,
 	                                       &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
@@ -112,53 +113,6 @@ void AAuraPlayerController::CursorTrace()
 	LastActor = ThisActor;
 	ThisActor = CursorHit.GetActor();
 
-	/*/*
-	 * 有以下几种情况
-	 * A. LastActor is null, ThisActor is null
-	 *		- Do Nothing
-	 * B. LastActor is null, ThisActor is valid
-	 *		- Highlight ThisActor
-	 * C. LastActor is valid, ThisActor is null
-	 *		- UnHighlight LastActor
-	 * D. Both actors are valid, but not equal
-	 *		- UnHighlight LastActor, Highlight ThisActor
-	 * E. Both actors are valid and equal
-	 *		- Do Nothing
-	 #1#
-	if (!LastActor)
-	{
-		if (!ThisActor)
-		{
-			// case A
-		}
-		else
-		{
-			// case B
-			ThisActor->HighlightActor();
-		}
-	}
-	else
-	{
-		if (!ThisActor)
-		{
-			// case C
-			LastActor->UnHighlightActor();
-		}
-		else
-		{
-			if (LastActor != ThisActor)
-			{
-				// case D
-				LastActor->UnHighlightActor();
-				ThisActor->HighlightActor();
-			}
-			else
-			{
-				// case E
-			}
-		}
-	}*/
-
 	if (LastActor != ThisActor)
 	{
 		if (LastActor) LastActor->UnHighlightActor();
@@ -185,7 +139,7 @@ void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& Inp
 		return;
 	}
 
-	if (bTargeting)
+	if (bTargeting || bShiftKeyDown)
 	{
 		// 按下的是鼠标左键，但正瞄准敌人，释放技能
 		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
@@ -226,7 +180,7 @@ void AAuraPlayerController::AbilityInputTagHeld(const FInputActionValue& InputAc
 		return;
 	}
 
-	if (bTargeting)
+	if (bTargeting || bShiftKeyDown)
 	{
 		// 按下的是鼠标左键，但正瞄准敌人，释放技能
 		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);

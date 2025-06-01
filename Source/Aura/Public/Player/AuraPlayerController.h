@@ -34,11 +34,20 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> AuraContext;
-	
+
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> MoveAction;
 
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> ShiftAction;
+
 	void Move(const FInputActionValue& InputActionValue);
+
+	void ShiftPressed(const FInputActionValue& InputActionValue) { bShiftKeyDown = true; }
+
+	void ShiftReleased(const FInputActionValue& InputActionValue) { bShiftKeyDown = false; }
+
+	bool bShiftKeyDown = false;
 
 	// 每帧调用来检测鼠标命中的Actor并高亮
 	void CursorTrace();
@@ -62,14 +71,14 @@ private:
 	/*
 	 * 点击移动的配置参数
 	 */
-	FVector CacheDestination = FVector::ZeroVector;	// 点击时缓存鼠标命中的目标
-	float FollowTime = 0.f;	// 记录鼠标按下后保持的时间
-	float ShortPressThreshold = 0.5f;	// 持续时间的阈值，超出之后就不认为进行点击移动
-	bool bAutoRunning = false;	// 每帧判断是否移动
+	FVector CacheDestination = FVector::ZeroVector; // 点击时缓存鼠标命中的目标
+	float FollowTime = 0.f; // 记录鼠标按下后保持的时间
+	float ShortPressThreshold = 0.5f; // 持续时间的阈值，超出之后就不认为进行点击移动
+	bool bAutoRunning = false; // 每帧判断是否移动
 	bool bTargeting = false;
 
 	UPROPERTY(EditDefaultsOnly)
-	float AutoRunAcceptanceRadius = 50.f;	// 点击移动的到点范围
+	float AutoRunAcceptanceRadius = 50.f; // 点击移动的到点范围
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
