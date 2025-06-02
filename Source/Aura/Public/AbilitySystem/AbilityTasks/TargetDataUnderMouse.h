@@ -29,6 +29,6 @@ private:
 	virtual void Activate() override;
 	// 我们在这个函数中定义FGameplayAbilityTargetData并将其发送至服务器
 	void SendMouseCursorData();
-
+	// 服务器会在Activate中将该函数绑定至AbilityTargetDataSetDelegate，以便在TargetData发送过来时接收广播
 	void OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ActivationTag);
 };
