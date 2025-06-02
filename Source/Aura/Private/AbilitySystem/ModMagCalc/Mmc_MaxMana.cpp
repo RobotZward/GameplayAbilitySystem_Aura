@@ -29,6 +29,7 @@ float UMmc_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 	GetCapturedAttributeMagnitude(IntelligenceDef, Spec, EvaluateParameters, Intelligence);
 	Intelligence = FMath::Max(Intelligence, 0.f);
 
+	// TODO: 采用TScriptInterface来转换Object并获取Level
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
 	check(CombatInterface);
 	const float PlayerLevel = CombatInterface->GetPlayerLevel();
