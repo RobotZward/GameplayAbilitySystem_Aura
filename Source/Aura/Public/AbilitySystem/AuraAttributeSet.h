@@ -76,7 +76,7 @@ public:
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-	// 该映射保存了Attribute对应的GameplayTag以及一个静态单播委托
+	// 该映射保存了Attribute对应的GameplayTag以及一个静态单播委托，会在AttributeSet初始化时进行配置
 	// 该委托会在构造函数中绑定到GetXXXAttribute()
 	// 可以在WidgetController中根据Tag和委托触发后返回的FGameplayAttribute获取Value
 	// 构造构造FAuraAttributeInfo后进行广播

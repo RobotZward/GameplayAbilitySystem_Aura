@@ -29,6 +29,7 @@ public:
 	FAttributeInfoSignature AttributeInfoDelegate;
 
 protected:
+	// 存储了GameplayTag和其对应的Attribute信息的DataAsset，BroadcastAttributeInfo会根据Tag寻找并设置Value后广播出去
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attribute Menu Data")
 	TObjectPtr<UAttributeInfo> AttributeInfo;
 
