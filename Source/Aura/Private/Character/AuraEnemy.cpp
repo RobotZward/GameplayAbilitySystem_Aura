@@ -3,11 +3,13 @@
 
 #include "Character/AuraEnemy.h"
 
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "Aura/Aura.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widget/AuraUserWidget.h"
 
 AAuraEnemy::AAuraEnemy()
@@ -46,8 +48,9 @@ int32 AAuraEnemy::GetPlayerLevel()
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
+	UAuraAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
 
 	if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -55,7 +58,7 @@ void AAuraEnemy::BeginPlay()
 		// 我们只需创建动态多播代理并将自身传给WidgetController即可
 		AuraUserWidget->SetWidgetController(this);
 	}
-	// 通过ASC绑定Health和MaxHealth变化时的代理
+	// 通过ASC绑定代理:Health和MaxHealth的变化、Effects.HitReact标签的改变
 	if (const UAuraAttributeSet* AuraAS = Cast<UAuraAttributeSet>(AttributeSet))
 	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAS->GetHealthAttribute()).AddLambda(
@@ -68,10 +71,21 @@ void AAuraEnemy::BeginPlay()
 			{
 				OnMaxHealthChangedDelegate.Broadcast(Data.NewValue);
 			});
+		AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact,
+		                                                 EGameplayTagEventType::AnyCountChange).AddUObject(
+			this,
+			&AAuraEnemy::HitReactTagChange
+		);
 
 		OnHealthChangedDelegate.Broadcast(AuraAS->GetHealth());
 		OnMaxHealthChangedDelegate.Broadcast(AuraAS->GetMaxHealth());
 	}
+}
+
+void AAuraEnemy::HitReactTagChange(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0 : BaseWalkSpeed;
 }
 
 void AAuraEnemy::InitAbilityActorInfo()

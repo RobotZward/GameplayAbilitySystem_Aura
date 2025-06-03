@@ -16,7 +16,7 @@
 DECLARE_DELEGATE_RetVal(FGameplayAttribute, FAttributeSignature)
 
 /*
- * 该结构体用来在GE执行后触发的函数中保存上下文
+ * 该结构体用来在GE执行后触发的PostGameplayEffectExecute中保存上下文
  */
 USTRUCT(BlueprintType)
 struct FEffectProperties
@@ -165,6 +165,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Mana, Category="Vital Attribute")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana);
+
+	/*
+	 * Meta Attributes
+	 */
+
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage);
 
 	UFUNCTION()
 	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;

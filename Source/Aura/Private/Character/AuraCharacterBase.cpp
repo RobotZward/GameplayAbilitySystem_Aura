@@ -31,6 +31,16 @@ UAbilitySystemComponent* AAuraCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+UAnimMontage* AAuraCharacterBase::GetHitReactMontage_Implementation()
+{
+	if (HitReactMontage == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HitReactMontage is nullptr! --AAuraCharacterBase"));
+		return nullptr;
+	}
+	return HitReactMontage;
+}
+
 // Called when the game starts or when spawned
 void AAuraCharacterBase::BeginPlay()
 {

@@ -29,13 +29,19 @@ UAuraAttributeSet::UAuraAttributeSet()
 	 * Secondary Attributes
 	 */
 	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
-	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
-	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute);
-	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute);
-	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_ArmorPenetration,
+	                                    GetArmorPenetrationAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitChance,
+	                                    GetCriticalHitChanceAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage,
+	                                    GetCriticalHitDamageAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance,
+	                                    GetCriticalHitResistanceAttribute);
 	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_BlockChance, GetBlockChanceAttribute);
-	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
-	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_HealthRegeneration,
+	                                    GetHealthRegenerationAttribute);
+	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_ManaRegeneration,
+	                                    GetManaRegenerationAttribute);
 	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
 	TagsToAttributesFuncPtrTemplate.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
 }
@@ -88,15 +94,37 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
 
+	// 对Health和Mana进行clamp
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
-		UE_LOG(LogTemp, Warning, TEXT("Source Change Health on %s, Health: %f"), *Props.SourceAvatarActor->GetName(), GetHealth());
-		UE_LOG(LogTemp, Warning, TEXT("Target Change Health on %s, Health: %f"), *Props.TargetAvatarActor->GetName(), GetHealth());
 	}
 	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
+	}
+
+	// 判断执行的GE中是否含有Meta Attributes
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		// 将IncomingDamage存储为局部变量并清空
+		const float LocalIncomingDamage = GetIncomingDamage();
+		SetIncomingDamage(0.f);
+		// 使用IncomingDamage修改Health并进行clamp和死亡判断
+		if (LocalIncomingDamage > 0.f)
+		{
+			const float NewHealth = GetHealth() - LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+
+			// 如果生命值不小于
+			const bool bFatal = NewHealth <= 0.f;
+			if (!bFatal)
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReact);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+		}
 	}
 }
 
