@@ -8,6 +8,7 @@
 
 class UGameplayAbility;
 class UGameplayEffect;
+class UCurveTable;
 
 UENUM(BlueprintType)
 enum class ECharacterClass : uint8
@@ -47,6 +48,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Common Class Defaults|Damage")
+	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
 
 	FCharacterClassDefaultInfo GetClassDefaultInfo(const ECharacterClass CharacterClass) const;
 };
