@@ -15,17 +15,17 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Primary.Strength"),
 		FString("Increases physical damage")
 	);
-	
+
 	GameplayTags.Attributes_Primary_Intelligence = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Intelligence"),
 		FString("Increases magical damage")
 	);
-	
+
 	GameplayTags.Attributes_Primary_Resilience = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Resilience"),
 		FString("Increases Armor and Armor Penetration")
 	);
-	
+
 	GameplayTags.Attributes_Primary_Vigor = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Primary.Vigor"),
 		FString("Increases Health")
@@ -34,7 +34,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	/*
 	 * Secondary Attributes GameplayTag
 	 */
-	
+
 	GameplayTags.Attributes_Secondary_Armor = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.Armor"),
 		FString("Reduces damage taken, improves Block Chance")
@@ -64,7 +64,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Attributes.Secondary.CriticalHitResistance"),
 		FString("Reduces Critical Hit Chance of attacking enemies")
 	);
-	
+
 	GameplayTags.Attributes_Secondary_HealthRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Secondary.HealthRegeneration"),
 		FString("Amount of Health regenerated every 1 second")
@@ -88,7 +88,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	/*
 	 * Input GameplayTag
 	 */
-	
+
 	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.LMB"),
 		FString("Input Tag for Left Mouse Button")
@@ -116,11 +116,25 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Input Tag for 4 Key")
 	);
 
+	/*
+	 * Damage
+	 */
+
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Damage"),
 		FString("Damage")
 	);
+
+	GameplayTags.Damage_Fire = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Fire"),
+		FString("Fire Damage Type")
+	);
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Fire);
 	
+	/*
+	 * Effect
+	 */
+
 	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.HitReact"),
 		FString("Tag granted when Hit Reacting")
