@@ -226,5 +226,5 @@ private:
 	// 通过PostGameplayEffectExecute，将当前执行的GE的属性保存为结构体
 	static void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props);
 
-	void ShowFloatingText(const FEffectProperties& Props, float Damage) const;
+	void ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHt, bool bCriticalHit) const;
 };
