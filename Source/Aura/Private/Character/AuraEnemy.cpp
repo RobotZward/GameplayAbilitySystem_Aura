@@ -19,6 +19,12 @@ AAuraEnemy::AAuraEnemy()
 {
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
@@ -35,9 +41,10 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 
 	if (!HasAuthority()) return;
 	AuraAIController = Cast<AAuraAIController>(NewController);
-
 	AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	AuraAIController->RunBehaviorTree(BehaviorTree);
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
 void AAuraEnemy::HighlightActor()
@@ -95,7 +102,7 @@ void AAuraEnemy::BeginPlay()
 				OnMaxHealthChangedDelegate.Broadcast(Data.NewValue);
 			});
 		AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact,
-		                                                 EGameplayTagEventType::AnyCountChange).AddUObject(
+		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
 			this,
 			&AAuraEnemy::HitReactTagChange
 		);
@@ -109,6 +116,7 @@ void AAuraEnemy::HitReactTagChange(const FGameplayTag CallbackTag, int32 NewCoun
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0 : BaseWalkSpeed;
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
 void AAuraEnemy::InitAbilityActorInfo()

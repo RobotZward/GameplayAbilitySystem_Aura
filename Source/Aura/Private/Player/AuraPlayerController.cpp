@@ -176,8 +176,11 @@ void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& Inp
 				{
 					Spline->AddSplinePoint(PathPoint, ESplineCoordinateSpace::World);
 				}
-				CacheDestination = NavPath->PathPoints.Last();
-				bAutoRunning = true;
+				if (NavPath->PathPoints.Num()>0)
+				{
+					CacheDestination = NavPath->PathPoints.Last();
+					bAutoRunning = true;
+				}
 			}
 		}
 		FollowTime = 0.f;

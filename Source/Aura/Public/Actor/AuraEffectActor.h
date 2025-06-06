@@ -37,9 +37,12 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// 是否在Effect移除后销毁
+	// 是否在Effect应用后销毁，仅在配置为instant时生效
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Applied Effects")
-	bool bDestroyOnEffectRemoval = false;
+	bool bDestroyOnEffectApplication = false;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Applied Effects")
+	bool bApplyEffectsToEnemies = false;
 
 	/** 三种持续时间政策的配置 */
 	// Instant GE Class
