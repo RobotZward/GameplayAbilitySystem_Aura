@@ -31,7 +31,7 @@ public:
 
 	// 用于初始化Enemy的StartupAbilities
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
-	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC);
+	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ECharacterClass CharacterClass);
 
 	// 直接返回AAuraGameModeBase中存储的UCharacterClassInfo数据
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
@@ -52,4 +52,14 @@ public:
 	// 该函数用来在蓝图中设置bIsCriticalHit
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const bool bIsCriticalHit);
+
+	// 该函数用来获取一定范围内bDead为false的Character
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void GetLivePlayersWithinRadius(
+		const UObject* WorldContextObject,
+		UPARAM(ref) TArray<AActor*>& OutOverlappingActors,
+		const TArray<AActor*>& ActorsToIgnore,
+		float Radius,
+		const FVector& SphereOrigin
+	);
 };

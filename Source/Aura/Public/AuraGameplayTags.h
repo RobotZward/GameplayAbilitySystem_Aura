@@ -52,6 +52,8 @@ public:
 	FGameplayTag Damage_Arcane;
 	FGameplayTag Damage_Physical;
 
+	FGameplayTag Abilities_Attack;
+
 	// 保存了DamageTag和ResistanceTag之间的对应关系
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 	

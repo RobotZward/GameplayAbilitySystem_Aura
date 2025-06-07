@@ -10,7 +10,6 @@
 #include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
@@ -180,10 +179,11 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 				Props.SourceController = Pawn->GetController();
 			}
 		}
-		if (Props.SourceController)
-		{
-			Props.SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
-		}
+		Props.SourceCharacter = Cast<ACharacter>(Props.SourceAvatarActor);
+		// if (Props.SourceController)
+		// {
+		// 	Props.SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
+		// }
 	}
 
 	/************************************************配置TargetEffectProperty*****************************************************/
@@ -200,16 +200,16 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 				Props.TargetController = Pawn->GetController();
 			}
 		}
-		if (Props.TargetController)
-		{
-			Props.TargetCharacter = Cast<ACharacter>(Props.TargetController->GetPawn());
-		}
+		// 由于Target不一定是Player或者Enemy所以需要从AvatarActor中获取，而不是TargetController
+		Props.TargetCharacter = Cast<ACharacter>(Props.TargetAvatarActor);
 	}
 }
 
 void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHt,
                                          bool bCriticalHit) const
 {
+	// if (!IsValid(Props.SourceCharacter) || !IsValid(Props.TargetCharacter)) return;
+	
 	if (Props.SourceCharacter != Props.TargetCharacter)
 	{
 		// 这里之所以从SourceCharacter获取玩家控制器而不是使用UGameplayStatics
@@ -217,7 +217,12 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 		// 而InComingDamage是我们定义的一个Meta Attribute，它不会被复制，因此上述逻辑只会在服务器上执行
 		// 由于客户端上只存在自己的PlayerController，通过GetPlayerController并传入0获取的控制器又不一定是该客户端的PlayerController
 		// 所以即使调用了ClientRPC方法，但由于客户端没有对应PlayerController，也就不会显示伤害数字
-		if (AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
+		if (IsValid(Props.SourceCharacter); AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
+		{
+			PC->ClientShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHt, bCriticalHit);
+			return;
+		}
+		if (IsValid(Props.TargetCharacter); AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->Controller))
 		{
 			PC->ClientShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHt, bCriticalHit);
 		}

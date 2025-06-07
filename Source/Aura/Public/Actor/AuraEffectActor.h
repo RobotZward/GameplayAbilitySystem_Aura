@@ -37,7 +37,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	// 是否在Effect应用后销毁，仅在配置为instant时生效
+	// 是否在Effect应用后销毁，仅在配置不为Infinite时生效
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Applied Effects")
 	bool bDestroyOnEffectApplication = false;
 

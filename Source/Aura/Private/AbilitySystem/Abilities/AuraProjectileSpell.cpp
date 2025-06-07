@@ -25,7 +25,13 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 	TScriptInterface<ICombatInterface> CombatInterface = GetAvatarActorFromActorInfo();
 	if (CombatInterface)
 	{
-		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
+		/**
+		 * 由于GetCombatSocketLocation被声明为BlueprintNativeEvent
+		 * 由于我们不能通过接口调用其虚函数，同时为了蓝图与C++调用的统一性，引擎自动生成了Execute_XXX方法供我们调用
+		 * 需要注意的是，出于防御性编程，Execute_XXX方法中使用check检测是否实现了接口，因此我们在调用前应手动检查一次
+		 */
+		// const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo());
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		// Rotation.Pitch = 0;
 

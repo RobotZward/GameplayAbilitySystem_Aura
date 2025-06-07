@@ -33,6 +33,8 @@ public:
 	/** Combat Interface */
 	virtual int32 GetPlayerLevel() override;
 	virtual void Die() override;
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() const override;
 	/** End Combat Interface */
 
 	UPROPERTY(BlueprintAssignable)
@@ -53,11 +55,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f;
 
+	UPROPERTY(BlueprintReadWrite, Category="Combat")
+	TObjectPtr<AActor> CombatTarget;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeDefaultAttributes() const override;
 
+	// 这是Enemy专用的Level，其会在BeginPlay()->UAuraAbilitySystemLibrary::GiveStartupAbilities()中
+	// 将CharacterClassDefaultInfo->StartupAbilities赋予ASC时被使用
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Character Class Defaults")
 	int32 Level = 1;
 
