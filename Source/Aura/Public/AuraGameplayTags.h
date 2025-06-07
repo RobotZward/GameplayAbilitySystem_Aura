@@ -54,6 +54,10 @@ public:
 
 	FGameplayTag Abilities_Attack;
 
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_RightHand;
+	FGameplayTag Montage_Attack_LeftHand;
+
 	// 保存了DamageTag和ResistanceTag之间的对应关系
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 	

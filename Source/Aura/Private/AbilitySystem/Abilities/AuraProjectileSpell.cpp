@@ -31,7 +31,10 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		 * 需要注意的是，出于防御性编程，Execute_XXX方法中使用check检测是否实现了接口，因此我们在调用前应手动检查一次
 		 */
 		// const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
-		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo());
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(
+			GetAvatarActorFromActorInfo(),
+			FAuraGameplayTags::Get().Montage_Attack_Weapon
+		);
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		// Rotation.Pitch = 0;
 
@@ -63,18 +66,18 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		FHitResult HitResult;
 		HitResult.Location = ProjectileTargetLocation;
 		EffectContextHandle.AddHitResult(HitResult);
-		
+
 		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(
 			DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
 		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
 
-		for (TPair<FGameplayTag, FScalableFloat>& Pair:DamageTypes)
+		for (TPair<FGameplayTag, FScalableFloat>& Pair : DamageTypes)
 		{
 			const float ScaleDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
 			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaleDamage);
 		}
-		
+
 		Projectile->DamageEffectSpecHandle = SpecHandle;
 
 		Projectile->FinishSpawning(SpawnTransform);

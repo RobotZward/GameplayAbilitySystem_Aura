@@ -4,6 +4,7 @@
 #include "Character/AuraCharacterBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AuraGameplayTags.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Aura/Aura.h"
 #include "Components/CapsuleComponent.h"
@@ -50,10 +51,22 @@ void AAuraCharacterBase::Die()
 	}
 }
 
-FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation()
+FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	check(Weapon);
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	const FAuraGameplayTags AuraGameplayTags = FAuraGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(AuraGameplayTags.Montage_Attack_Weapon) && IsValid(Weapon))
+	{
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
+	}
+	if (MontageTag.MatchesTagExact(AuraGameplayTags.Montage_Attack_LeftHand))
+	{
+		return GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+	if (MontageTag.MatchesTagExact(AuraGameplayTags.Montage_Attack_RightHand))
+	{
+		return GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+	return FVector();
 }
 
 bool AAuraCharacterBase::IsDead_Implementation() const
@@ -64,6 +77,23 @@ bool AAuraCharacterBase::IsDead_Implementation() const
 AActor* AAuraCharacterBase::GetAvatar_Implementation()
 {
 	return this;
+}
+
+TArray<FTaggedMontage> AAuraCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
+}
+
+FTaggedMontage AAuraCharacterBase::GetRandomAttackMontage_Implementation(bool& bSuccess)
+{
+	if (AttackMontages.Num() > 0)
+	{
+		const int32 RandomIndex = FMath::RandRange(0, AttackMontages.Num() - 1);
+		bSuccess = true;
+		return AttackMontages[RandomIndex];
+	}
+	bSuccess = false;
+	return FTaggedMontage();
 }
 
 void AAuraCharacterBase::MulticastHandleDeath_Implementation()
@@ -134,7 +164,8 @@ void AAuraCharacterBase::Dissolve()
 	}
 	if (IsValid(WeaponDissolveMaterialInstance))
 	{
-		UMaterialInstanceDynamic* WeaponDynamicMatInst = UMaterialInstanceDynamic::Create(WeaponDissolveMaterialInstance, this);
+		UMaterialInstanceDynamic* WeaponDynamicMatInst = UMaterialInstanceDynamic::Create(
+			WeaponDissolveMaterialInstance, this);
 		Weapon->SetMaterial(0, WeaponDynamicMatInst);
 		StartWeaponDissolveTimeline(WeaponDynamicMatInst);
 	}

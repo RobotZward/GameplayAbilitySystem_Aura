@@ -29,13 +29,18 @@ public:
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void Die() override;
 	// 该函数继承于ICombatInterface， 用于获取插槽位置
-	virtual FVector GetCombatSocketLocation_Implementation() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual FTaggedMontage GetRandomAttackMontage_Implementation(bool& bSuccess) override;
 	/** End Combat Interface */
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FTaggedMontage> AttackMontages;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,9 +49,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
-	// 该FName需要填入武器的特殊插槽，用于施法
+	// 该FName需要填入武器的特殊插槽，用于攻击
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName WeaponTipSocketName;
+	// 该FName需要填入左手的特殊插槽，用于攻击
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName LeftHandSocketName;
+	// 该FName需要填入右手的特殊插槽，用于施法
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName RightHandSocketName;
 
 	bool bDead = false;
 	

@@ -54,7 +54,7 @@ public:
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const bool bIsCriticalHit);
 
 	// 该函数用来获取一定范围内bDead为false的Character
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetLivePlayersWithinRadius(
 		const UObject* WorldContextObject,
 		UPARAM(ref) TArray<AActor*>& OutOverlappingActors,
@@ -62,4 +62,8 @@ public:
 		float Radius,
 		const FVector& SphereOrigin
 	);
+
+	// 该函数通过两个Actor的标签来判断是否应该互相伤害
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
+	static bool IsFriend(AActor* FirstActor, AActor* SecondActor);
 };
