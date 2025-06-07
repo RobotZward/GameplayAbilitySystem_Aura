@@ -46,7 +46,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, Category="Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	// 该FName需要填入武器的特殊插槽，用于攻击
