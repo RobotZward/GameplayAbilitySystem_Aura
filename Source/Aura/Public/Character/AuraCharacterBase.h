@@ -52,15 +52,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
-	// 该FName需要填入武器的特殊插槽，用于攻击
+	// 该FName需要填入武器的特殊插槽，用于攻击时查找Socket位置
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName WeaponTipSocketName;
-	// 该FName需要填入左手的特殊插槽，用于攻击
+	// 该FName需要填入左手的特殊插槽，用于攻击时查找Socket位置
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName LeftHandSocketName;
-	// 该FName需要填入右手的特殊插槽，用于施法
+	// 该FName需要填入右手的特殊插槽，用于攻击时查找Socket位置
 	UPROPERTY(EditAnywhere, Category="Combat")
 	FName RightHandSocketName;
+	// 该FName需要填入尾巴的特殊插槽，用于攻击时查找Socket位置
+	UPROPERTY(EditAnywhere, Category="Combat")
+	FName TailSocketName;
 
 	bool bDead = false;
 	
@@ -101,8 +104,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	UNiagaraSystem* BloodEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	USoundBase* DeathSound;
 	
 private:
 	UPROPERTY(EditAnywhere, Category="Abilities")
