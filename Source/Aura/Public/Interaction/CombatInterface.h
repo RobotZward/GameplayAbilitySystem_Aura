@@ -74,4 +74,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UNiagaraSystem* GetBloodEffect();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	int32 GetMinionCount();
+	// 增加随从计数，仅限正值
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void IncrementMinionCount(int32 Amount);
+	// 减少随从计数，仅限正值
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void DecrementMinionCount(int32 Amount);
 };
