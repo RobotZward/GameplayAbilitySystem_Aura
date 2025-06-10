@@ -5,6 +5,7 @@
 
 #include "GameplayTagContainer.h"
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
+#include "Aura/AuraLogChannels.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -21,11 +22,9 @@ void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 			AbilitySpec.DynamicAbilityTags.AddTag(AuraAbility->StartupInputTag);
 			GiveAbility(AbilitySpec);
 		}
-
-		// GiveAbility可以接受一个const AbilitySpec
-		// GiveAbility不能接受const AbilitySpec
-		// GiveAbilityAndActivateOnce(AbilitySpec);
 	}
+	bStartupAbilitiesGiven = true;
+	OnAbilityGivenDelegate.Broadcast(this);
 }
 
 void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
@@ -64,9 +63,49 @@ void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& In
 	}
 }
 
+void UAuraAbilitySystemComponent::ForEachAbility(const FForEachAbilityDelegate& Delegate)
+{
+	// NOTE: 该段意为主动锁定Ability状态，防止在遍历过程中状态变化导致数据出错
+	FScopedAbilityListLock ActiveScopLock(*this);
+	for(const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if (Delegate.ExecuteIfBound(AbilitySpec))
+		{
+			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in %hs"), __FUNCTION__)
+		}
+	}
+}
+
+FGameplayTag UAuraAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Ability)
+	{
+		for (FGameplayTag Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities"))))
+			{
+				return Tag;
+			}
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UAuraAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for (FGameplayTag Tag : AbilitySpec.DynamicAbilityTags)
+	{
+		if (Tag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("InputTag"))))
+		{
+			return Tag;
+		}
+	}
+	return FGameplayTag();
+}
+
 void UAuraAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
-                                                const FGameplayEffectSpec& EffectSpec,
-                                                FActiveGameplayEffectHandle ActiveEffectHandle) const
+                                                                     const FGameplayEffectSpec& EffectSpec,
+                                                                     FActiveGameplayEffectHandle ActiveEffectHandle) const
 {
 	FGameplayTagContainer TagContainer;
 	EffectSpec.GetAllAssetTags(TagContainer);

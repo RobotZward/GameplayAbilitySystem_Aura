@@ -8,6 +8,7 @@
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
+#include "Aura/AuraLogChannels.h"
 #include "Interaction/CombatInterface.h"
 
 // 使用经典C++定义方式，不需要反射
@@ -42,9 +43,8 @@ struct AuraDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ArcaneResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, PhysicalResistance, Target, false);
 	}
-
 	// 由于静态变量初始化顺序不固定，所以放在构造函数中可能存在初始化时Tag还未初始化
-	// 因此采用懒加载的方式初始化，即放在Get函数中，等到获取时再第一次初始化
+	// 因此采用懒加载的方式初始化，即将初始化方法放在Get函数中，等到获取时再第一次初始化
 	void InitTagsToCaptureDefs()
 	{
 		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
@@ -80,7 +80,7 @@ float GetSafeSetByCaller(const FGameplayEffectSpec& Spec, const FGameplayTag& Ta
 
 	if (bWarningIfNotFound)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SetByCaller tag [%s] not found, using default value [%f]"), *Tag.ToString(), DefaultValue);
+		UE_LOG(LogAura, Warning, TEXT("SetByCaller tag [%s] not found, using default value [%f]"), *Tag.ToString(), DefaultValue);
 	}
 	return DefaultValue;
 }

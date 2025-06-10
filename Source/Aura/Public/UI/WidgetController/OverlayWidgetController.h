@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "UI/WidgetController/AuraWidgetController.h"
 #include "OverlayWidgetController.generated.h"
+
+class UAuraAbilitySystemComponent;
+class UAbilityInfo;
 
 USTRUCT(BlueprintType)
 struct FUIWidgetRow:public FTableRowBase
@@ -28,8 +32,8 @@ struct FUIWidgetRow:public FTableRowBase
 struct FOnAttributeChangeData;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangeSignature, float, NewValue);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoDelegate, const FAuraAbilityInfo&, AbilityInfo);
 
 
 
@@ -59,10 +63,19 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
+	FAbilityInfoDelegate AbilityInfoDelegate;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+
+	// 该方法用于在角色初始能力被赋予之后调用，仅执行一次，
+	void OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent);
 
 	template<typename  T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
