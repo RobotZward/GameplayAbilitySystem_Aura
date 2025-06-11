@@ -86,6 +86,20 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 
 	/*
+	 * Meta GameplayTag
+	 */
+
+	GameplayTags.Attributes_Meta_IncomingDamage = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta.IncomingDamage"),
+		FString("Tag for incoming damage")
+	);
+
+	GameplayTags.Attributes_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Meta.IncomingXP"),
+		FString("Tag for incoming XP")
+	);
+	
+	/*
 	 * Input GameplayTag
 	 */
 

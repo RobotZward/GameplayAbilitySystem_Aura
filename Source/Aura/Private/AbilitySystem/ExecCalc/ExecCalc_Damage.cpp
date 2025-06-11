@@ -109,8 +109,17 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	AActor* SourceAvatarActor = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetAvatarActor = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
-	TScriptInterface<ICombatInterface> SourceCombatInterface = SourceAvatarActor;
-	TScriptInterface<ICombatInterface> TargetCombatInterface = TargetAvatarActor;
+
+	int32 SourcePlayerLevel = 1;
+	if (SourceAvatarActor->Implements<UCombatInterface>())
+	{
+		SourcePlayerLevel = ICombatInterface::Execute_GetPlayerLevel(SourceAvatarActor);
+	}
+	int32 TargetPlayerLevel = 1;
+	if (TargetAvatarActor->Implements<UCombatInterface>())
+	{
+		TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatarActor);
+	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
@@ -182,9 +191,9 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	FRealCurve* ArmorPenetrationCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(
 		FName("ArmorPenetration"), FString());
-	const float ArmorPenetrationCoefficients = ArmorPenetrationCurve->Eval(SourceCombatInterface->GetPlayerLevel());
+	const float ArmorPenetrationCoefficients = ArmorPenetrationCurve->Eval(SourcePlayerLevel);
 	FRealCurve* ArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("Armor"), FString());
-	const float ArmorCoefficients = ArmorCurve->Eval(TargetCombatInterface->GetPlayerLevel());
+	const float ArmorCoefficients = ArmorCurve->Eval(TargetPlayerLevel);
 
 	const float EffectiveArmor = TargetArmor *= FMath::Max<float>(
 		0.f, (100 - SourceArmorPenetration * ArmorPenetrationCoefficients) / 100.f);
@@ -212,7 +221,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	FRealCurve* CriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(
 		FName("CriticalHitResistance"), FString());
 	const float CriticalHitResistanceCoefficients = CriticalHitResistanceCurve->Eval(
-		TargetCombatInterface->GetPlayerLevel());
+		TargetPlayerLevel);
 
 	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance *
 		CriticalHitResistanceCoefficients;

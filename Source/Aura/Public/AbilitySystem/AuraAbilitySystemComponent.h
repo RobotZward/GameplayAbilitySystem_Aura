@@ -30,6 +30,8 @@ public:
 
 	// Character传入一个StartupAbilities数组，调用该方法来赋予初始能力
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
+	// Character传入一个StartupPassiveAbilities数组，调用该方法来赋予初始能力并执行
+	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
 
 	// 该函数用于AuraPlayerController中的同名函数，接收GameplayTag并判断激活哪个技能
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);

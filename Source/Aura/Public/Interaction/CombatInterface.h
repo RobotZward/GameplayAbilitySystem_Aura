@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
@@ -44,7 +45,8 @@ class AURA_API ICombatInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual int32 GetPlayerLevel();
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetPlayerLevel();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FVector GetCombatSocketLocation(const FGameplayTag& MontageTag);
@@ -83,4 +85,7 @@ public:
 	// 减少随从计数，仅限正值
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void DecrementMinionCount(int32 Amount);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	ECharacterClass GetCharacterClass();
 };
