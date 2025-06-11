@@ -81,9 +81,8 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	
 }
 
-void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent)
+void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent) const
 {
-	// TODO: 获取已经赋予的能力，查找它们的AbilityInfo并广播到widgets
 	if (!AuraAbilitySystemComponent->GetStartupAbilitiesGiven()) return;
 
 	FForEachAbilityDelegate Delegate;

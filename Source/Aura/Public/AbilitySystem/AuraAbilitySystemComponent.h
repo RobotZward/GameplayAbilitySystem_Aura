@@ -40,9 +40,13 @@ public:
 	void ForEachAbility(const FForEachAbilityDelegate& Delegate);
 	
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
-	FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 
 protected:
+	// 该方法的功能是在FGameplayAbilitySpecContainer ActivatableAbilities变化后将其复制到客户端的ASC，类似OnRep_Health
+	// 由于我们将玩家技能初始化的方法放在了ACharacter的PossessedBy方法中，所以只会在服务器调用
+	// 综上所述我们需要重写OnRep_ActivateAbilities来让客户端获取ActivatableAbilities
+	virtual void OnRep_ActivateAbilities() override;
 	// 绑定至OnGameplayEffectAppliedDelegateToSelf并广播FEffectAssetTags代理
 	// 由于OnGameplayEffectAppliedDelegateToSelf只会在服务器调用，所以需要使用Client RPC来在服务器调用，在客户端执行
 	UFUNCTION(Client, Reliable)

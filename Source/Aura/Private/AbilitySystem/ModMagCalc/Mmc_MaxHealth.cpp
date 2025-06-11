@@ -30,8 +30,8 @@ float UMmc_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	Vigor = FMath::Max(Vigor, 0.f);
 
 	// TODO: 采用TScriptInterface来转换Object并获取Level
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
-	check(CombatInterface);
+	TScriptInterface<ICombatInterface> CombatInterface = Spec.GetContext().GetSourceObject();
+	if (!CombatInterface) return 0;
 	const int32 PlayerLevel = CombatInterface->GetPlayerLevel();
 
 	return 80.f + 2.5f * Vigor + 10.f * PlayerLevel;
