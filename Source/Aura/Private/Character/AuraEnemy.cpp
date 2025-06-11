@@ -9,6 +9,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AI/AuraAIController.h"
 #include "Aura/Aura.h"
+#include "Aura/AuraLogChannels.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
@@ -126,6 +127,7 @@ void AAuraEnemy::BeginPlay()
 
 void AAuraEnemy::HitReactTagChange(const FGameplayTag CallbackTag, int32 NewCount)
 {
+	UE_LOG(LogAura, Log, TEXT("[%s] has [%d] [%s]"), *GetNameSafe(this), NewCount, *CallbackTag.ToString());
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0 : BaseWalkSpeed;
 	if (AuraAIController && AuraAIController->GetBlackboardComponent())
