@@ -23,7 +23,13 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
 	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
-	
+	AuraPlayerState->OnLevelChangedDelegate.AddLambda(
+		[this](int32 NewLevel)
+		{
+			OnLevelChangedDelegate.Broadcast(NewLevel);
+		}
+	);
+
 	const UAuraAttributeSet* AuraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).
@@ -55,7 +61,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			                        OnMaxManaChanged.Broadcast(Data.NewValue);
 		                        }
 	                        );
-	
+
 	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
 	{
 		if (AuraASC->GetStartupAbilitiesGiven())
@@ -68,32 +74,33 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		}
 
 		AuraASC->EffectAssetTags.AddLambda(
-		[this](const FGameplayTagContainer& AssetTags)
-		{
-			for (const FGameplayTag& Tag : AssetTags)
+			[this](const FGameplayTagContainer& AssetTags)
 			{
-				// "A.1".MatchesTag("A") will return True, "A".MatchesTag("A.1") will return False
-				FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
-				if (Tag.MatchesTag(MessageTag))
+				for (const FGameplayTag& Tag : AssetTags)
 				{
-					const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
-					MessageWidgetRowDelegate.Broadcast(*Row);
+					// "A.1".MatchesTag("A") will return True, "A".MatchesTag("A.1") will return False
+					FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message"));
+					if (Tag.MatchesTag(MessageTag))
+					{
+						const FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);
+						MessageWidgetRowDelegate.Broadcast(*Row);
+					}
 				}
 			}
-		}
-	);
+		);
 	}
-	
 }
 
-void UOverlayWidgetController::OnInitializeStartupAbilities(UAuraAbilitySystemComponent* AuraAbilitySystemComponent) const
+void UOverlayWidgetController::OnInitializeStartupAbilities(
+	UAuraAbilitySystemComponent* AuraAbilitySystemComponent) const
 {
 	if (!AuraAbilitySystemComponent->GetStartupAbilitiesGiven()) return;
 
 	FForEachAbilityDelegate Delegate;
 	Delegate.BindLambda([this, AuraAbilitySystemComponent](const FGameplayAbilitySpec& AbilitySpec)
 	{
-		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AuraAbilitySystemComponent->GetAbilityTagFromSpec(AbilitySpec));
+		FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(
+			AuraAbilitySystemComponent->GetAbilityTagFromSpec(AbilitySpec));
 		Info.InputTag = AuraAbilitySystemComponent->GetInputTagFromSpec(AbilitySpec);
 		AbilityInfoDelegate.Broadcast(Info);
 	});
@@ -107,7 +114,7 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP) const
 	check(LevelUpInfo);
 
 	const int32 Level = LevelUpInfo->FindLevelForXP(NewXP);
-	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
+	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num() - 1;
 
 	if (Level <= MaxLevel && Level > 0)
 	{
@@ -120,5 +127,9 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP) const
 		const float XPBarPercent = static_cast<float>(XPForThisLevel) / static_cast<float>(DeltaLevelUpRequirement);
 
 		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
+	}
+	if (Level > MaxLevel)
+	{
+		OnXPPercentChangedDelegate.Broadcast(1);
 	}
 }

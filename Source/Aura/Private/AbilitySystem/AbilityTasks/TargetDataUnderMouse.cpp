@@ -21,6 +21,7 @@ void UTargetDataUnderMouse::Activate()
 	}
 	else
 	{
+		// TODO：服务器接收TargetData时为什么要提供PredictionKey，PredictionKey都能用在哪些地方
 		const FGameplayAbilitySpecHandle SpecHandle = GetAbilitySpecHandle();
 		const FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
 		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(SpecHandle, ActivationPredictionKey).

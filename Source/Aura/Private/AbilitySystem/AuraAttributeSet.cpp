@@ -163,9 +163,30 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		SetIncomingXP(0.f);
 		
 		// TODO: See if we could Level Up
-		if (Props.SourceCharacter->Implements<UPlayerInterface>())
+		if (Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
 		{
-			IPlayerInterface::Execute_AddXP(Props.SourceCharacter, LocalIncomingXP);
+			const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
+			const int32 CurrentXP = IPlayerInterface::Execute_GetXP(Props.SourceCharacter);
+			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Props.SourceCharacter, CurrentXP+LocalIncomingXP);
+			const int32 NumLevelUps = NewLevel - CurrentLevel;
+
+			if (NumLevelUps > 0)
+			{
+				int32 AllAttributePoints = 0;
+				int32 AllSpellPoints = 0;
+				for (int32 i = CurrentLevel; i < NewLevel; i++)
+				{
+					AllAttributePoints += IPlayerInterface::Execute_GetAttributesPointsReward(Props.SourceCharacter, i);
+					AllSpellPoints += IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, i);
+				}
+				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
+				IPlayerInterface::Execute_AddToAttributePointsReward(Props.SourceCharacter, AllAttributePoints);
+				IPlayerInterface::Execute_AddToSpellPointsReward(Props.SourceCharacter, AllSpellPoints);
+				SetHealth(GetMaxHealth());
+				SetMana(GetMaxMana());
+				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
+			}
+			IPlayerInterface::Execute_AddToXP(Props.SourceCharacter, LocalIncomingXP);
 		}
 	}
 }
