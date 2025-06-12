@@ -3,8 +3,10 @@
 
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
+#include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
+#include "Player/AuraPlayerState.h"
 
 void UAttributeMenuWidgetController::BroadcastInitialValues()
 {
@@ -19,6 +21,10 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 		
 		BroadcastAttributeInfo(Tag, Attribute);
 	}
+
+	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	OnAttributePointsChangedDelegate.Broadcast(AuraPlayerState->GetAttributePoints());
+	OnSpellPointsChangedDelegate.Broadcast(AuraPlayerState->GetSpellPoints());
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
@@ -36,6 +42,26 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 				BroadcastAttributeInfo(Tag, Attribute);
 			});
 	}
+
+	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	AuraPlayerState->OnAttributePointsChangedDelegate.AddLambda(
+		[this](int32 Points)
+		{
+			OnAttributePointsChangedDelegate.Broadcast(Points);
+		}
+	);
+	AuraPlayerState->OnSpellPointsChangedDelegate.AddLambda(
+		[this](int32 Points)
+		{
+			OnSpellPointsChangedDelegate.Broadcast(Points);
+		}
+	);
+}
+
+void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	UAuraAbilitySystemComponent* AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	AuraAbilitySystemComponent->UpgradeAttribute(AttributeTag);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& Tag,

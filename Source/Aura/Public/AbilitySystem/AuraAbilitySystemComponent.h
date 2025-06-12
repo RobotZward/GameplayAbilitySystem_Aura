@@ -38,11 +38,17 @@ public:
 	// 该函数用于AuraPlayerController中的同名函数，接收GameplayTag并判断激活哪个技能
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	// 获取bStartupAbilitiesGiven，该变量标识了当前是否已经赋予初始值，Widget Controller会根据此值决定是否还需要绑定委托
-	bool GetStartupAbilitiesGiven() const {return bStartupAbilitiesGiven;}
+	bool GetStartupAbilitiesGiven() const { return bStartupAbilitiesGiven; }
 	void ForEachAbility(const FForEachAbilityDelegate& Delegate);
-	
+
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+
+	UFUNCTION(Server, Reliable)
+	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
 
 protected:
 	// 该方法的功能是在FGameplayAbilitySpecContainer ActivatableAbilities变化后将其复制到客户端的ASC，类似OnRep_Health
@@ -53,7 +59,8 @@ protected:
 	// 由于OnGameplayEffectAppliedDelegateToSelf只会在服务器调用，所以需要使用Client RPC来在服务器调用，在客户端执行
 	UFUNCTION(Client, Reliable)
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec,
-	                   FActiveGameplayEffectHandle ActiveEffectHandle) const;
+	                         FActiveGameplayEffectHandle ActiveEffectHandle) const;
+
 private:
 	// 该变量标识了当前是否已经赋予初始值，Widget Controller会根据此值决定是否还需要绑定委托
 	bool bStartupAbilitiesGiven = false;

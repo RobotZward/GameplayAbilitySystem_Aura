@@ -180,8 +180,8 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 					AllSpellPoints += IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter, i);
 				}
 				IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter, NumLevelUps);
-				IPlayerInterface::Execute_AddToAttributePointsReward(Props.SourceCharacter, AllAttributePoints);
-				IPlayerInterface::Execute_AddToSpellPointsReward(Props.SourceCharacter, AllSpellPoints);
+				IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter, AllAttributePoints);
+				IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter, AllSpellPoints);
 				SetHealth(GetMaxHealth());
 				SetMana(GetMaxMana());
 				IPlayerInterface::Execute_LevelUp(Props.SourceCharacter);
