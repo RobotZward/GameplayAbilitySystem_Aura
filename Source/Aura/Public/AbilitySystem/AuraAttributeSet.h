@@ -74,6 +74,8 @@ public:
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
 	// 该映射保存了Attribute对应的GameplayTag以及一个静态单播委托，会在AttributeSet初始化时进行配置
@@ -265,4 +267,8 @@ private:
 	void ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHt, bool bCriticalHit) const;
 
 	void SendXPEvent(const FEffectProperties& Props);
+
+	// 这两个boolean用来表示最大生命值的更改是否由LevelUp触发
+	bool bTopOffHealth = false;
+	bool bTopOffMana = false;
 };
