@@ -143,8 +143,16 @@ UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 	return GameMode->CharacterClassInfo;
 }
 
+UAbilityInfo* UAuraAbilitySystemLibrary::GetAbilityInfo(const UObject* WorldContextObject)
+{
+	const AAuraGameModeBase* GameMode = Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (GameMode == nullptr) return nullptr;
+
+	return GameMode->AbilityInfo;
+}
+
 int32 UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* WorldContextObject,
-	const ECharacterClass CharacterClass, int32 Level)
+                                                             const ECharacterClass CharacterClass, int32 Level)
 {
 	const UCharacterClassInfo* ClassInfo = GetCharacterClassInfo(WorldContextObject);
 	if (ClassInfo == nullptr) return 0;

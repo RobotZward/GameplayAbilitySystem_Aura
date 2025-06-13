@@ -19,7 +19,6 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	}
 	
 	OnAttributePointsChangedDelegate.Broadcast(GetAuraPlayerState()->GetAttributePoints());
-	OnSpellPointsChangedDelegate.Broadcast(GetAuraPlayerState()->GetSpellPoints());
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
@@ -40,12 +39,6 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 		[this](int32 Points)
 		{
 			OnAttributePointsChangedDelegate.Broadcast(Points);
-		}
-	);
-	GetAuraPlayerState()->OnSpellPointsChangedDelegate.AddLambda(
-		[this](int32 Points)
-		{
-			OnSpellPointsChangedDelegate.Broadcast(Points);
 		}
 	);
 }

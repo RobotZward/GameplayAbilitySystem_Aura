@@ -8,6 +8,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UAbilityInfo;
 class AAuraHUD;
 class USpellMenuWidgetController;
 class UAttributeMenuWidgetController;
@@ -49,6 +50,10 @@ public:
 	// 直接返回AAuraGameModeBase中存储的UCharacterClassInfo数据
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+
+	// 直接返回AAuraGameModeBase中存储的UAbilityInfo数据
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
 
 	// 根据敌人类别和等级从CharacterClassInfo中获取其奖励经验值
 	UFUNCTION()
