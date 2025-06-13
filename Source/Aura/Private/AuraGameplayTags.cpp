@@ -117,17 +117,30 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("InputTag.Key1"),
 		FString("Input Tag for 1 Key")
 	);
+	
 	GameplayTags.InputTag_Key2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Key2"),
 		FString("Input Tag for 2 Key")
 	);
+	
 	GameplayTags.InputTag_Key3 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Key3"),
 		FString("Input Tag for 3 Key")
 	);
+	
 	GameplayTags.InputTag_Key4 = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("InputTag.Key4"),
 		FString("Input Tag for 4 Key")
+	);
+
+	GameplayTags.InputTag_Passive_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Passive.1"),
+		FString("Input Tag for Passive Ability 1")
+	);
+
+	GameplayTags.InputTag_Passive_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("InputTag.Passive.2"),
+		FString("Input Tag for Passive Ability 2")
 	);
 
 	/*
@@ -254,7 +267,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	);
 
 	/*
-	 * Combat Sockets
+	 * Montage
 	 */
 
 	GameplayTags.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(

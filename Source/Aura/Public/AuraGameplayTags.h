@@ -48,6 +48,8 @@ public:
 	FGameplayTag InputTag_Key2;
 	FGameplayTag InputTag_Key3;
 	FGameplayTag InputTag_Key4;
+	FGameplayTag InputTag_Passive_1;
+	FGameplayTag InputTag_Passive_2;
 
 	FGameplayTag Damage;
 	FGameplayTag Damage_Fire;
@@ -57,7 +59,6 @@ public:
 
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_Summon;
-
 	FGameplayTag Abilities_Fire_FireBolt;
 
 	FGameplayTag Cooldown_Fire_FireBolt;

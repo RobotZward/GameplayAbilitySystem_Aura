@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "AuraHUD.generated.h"
 
+class USpellMenuWidgetController;
 class UAttributeMenuWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -31,6 +32,10 @@ public:
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(
 		const FWidgetControllerParams& WidgetControllerParams);
 
+	// 返回SpellMenuWidgetController，正常情况下第一次调用时应该是初始化
+	USpellMenuWidgetController* GetSpellMenuWidgetController(
+		const FWidgetControllerParams& WidgetControllerParams);
+
 protected:
 
 private:
@@ -51,4 +56,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<USpellMenuWidgetController> SpellMenuWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<USpellMenuWidgetController> SpellMenuWidgetControllerClass;
 };
