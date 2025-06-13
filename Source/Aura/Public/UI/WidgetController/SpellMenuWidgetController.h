@@ -34,11 +34,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|PlayerStat")
 	FOnPlayerStatChangeSignature OnSpellPointsChangedDelegate;
 
-	UPROPERTY(BlueprintAssignable, Category = "GAS|SpellButton")
+	UPROPERTY(BlueprintAssignable, Category = "GAS|SpellMenuController")
 	FSpellGlobeSelectedSignature OnSpellGlobeSelectedDelegate;
 
-	UFUNCTION(BlueprintCallable, Category = "GAS|SpellButton")
+	UFUNCTION(BlueprintCallable, Category = "GAS|SpellMenuController")
 	void SpellGlobeSelected(const FGameplayTag& AbilityTag);
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|SpellMenuController")
+	void SpendPointButtonPressed();
 
 private:
 	static void ShouldEnableButtons(

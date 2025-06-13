@@ -11,7 +11,7 @@ struct FGameplayAbilitySpec;
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
 DECLARE_MULTICAST_DELEGATE(FOnAbilityGivenDelegate);
 DECLARE_DELEGATE_OneParam(FForEachAbilityDelegate, const FGameplayAbilitySpec&);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChangedSignature, const FGameplayTag& /*AbilityTag*/ ,const FGameplayTag& /*StatusTag*/);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChangedSignature, const FGameplayTag& /*AbilityTag*/ ,const FGameplayTag& /*StatusTag*/, int32 /*AbilityLevel*/);
 
 /**
  * 
@@ -59,6 +59,9 @@ public:
 
 	void UpdateAbilityStatuses(int32 Level);
 
+	UFUNCTION(Server, Reliable)
+	void ServerSpendSpellPoint(const FGameplayTag& AbilityTag);
+
 protected:
 	// 该方法的功能是在FGameplayAbilitySpecContainer ActivatableAbilities变化后将其复制到客户端的ASC，类似OnRep_Health
 	// 由于我们将玩家技能初始化的方法放在了ACharacter的PossessedBy方法中，所以只会在服务器调用
@@ -70,7 +73,7 @@ protected:
 	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec,
 	                         FActiveGameplayEffectHandle ActiveEffectHandle) const;
 	UFUNCTION(Client, Reliable)
-	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
+	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel);
 
 private:
 	// 该变量标识了当前是否已经赋予初始值，Widget Controller会根据此值决定是否还需要绑定委托
