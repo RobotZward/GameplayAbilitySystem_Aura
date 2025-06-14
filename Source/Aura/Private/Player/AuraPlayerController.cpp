@@ -156,7 +156,7 @@ void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& Inp
 	if (bTargeting || bShiftKeyDown)
 	{
 		// 按下的是鼠标左键，但正瞄准敌人，释放技能
-		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
 	}
 	else
 	{

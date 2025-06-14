@@ -85,7 +85,7 @@ void UAuraAbilitySystemComponent::ForEachAbility(const FForEachAbilityDelegate& 
 	FScopedAbilityListLock ActiveScopLock(*this);
 	for(const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
-		if (Delegate.ExecuteIfBound(AbilitySpec))
+		if (!Delegate.ExecuteIfBound(AbilitySpec))
 		{
 			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in %hs"), __FUNCTION__)
 		}
@@ -303,7 +303,7 @@ void UAuraAbilitySystemComponent::ClearSlot(FGameplayAbilitySpec* AbilitySpec)
 void UAuraAbilitySystemComponent::ClearAbilitiesOfSlot(const FGameplayTag& Slot)
 {
 	FScopedAbilityListLock ActiveScopeLock(*this);
-	for (FGameplayAbilitySpec AbilitySpec : GetActivatableAbilities())
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
 	{
 		if (AbilityHasSlot(&AbilitySpec, Slot))
 		{
