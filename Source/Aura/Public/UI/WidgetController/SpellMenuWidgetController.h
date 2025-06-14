@@ -9,8 +9,11 @@
 #include "SpellMenuWidgetController.generated.h"
 
 struct FAuraGameplayTags;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSpellGlobeSelectedSignature, bool, bSpendPointsButtonEnabled, bool,
-                                             bEquipbuttonEnabled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSpellGlobeSelectedSignature,
+	bool, bSpendPointsButtonEnabled,
+	bool, bEquipbuttonEnabled,
+	FString, Description,
+	FString, NextLevelDescription);
 
 struct FSelectedAbility
 {
