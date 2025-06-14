@@ -86,6 +86,13 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityT
 	OnSpellGlobeSelectedDelegate.Broadcast(bEnableSpendPoints, bEnableEquip, Description, NextLevelDescription);
 }
 
+void USpellMenuWidgetController::SpellGlobeDeselect()
+{
+	SelectedAbility.AbilityTag = FAuraGameplayTags::Get().Abilities_None;
+	SelectedAbility.StatusTag = FAuraGameplayTags::Get().Abilities_Status_Locked;
+	OnSpellGlobeSelectedDelegate.Broadcast(false, false, FString(), FString());
+}
+
 void USpellMenuWidgetController::SpendPointButtonPressed()
 {
 	if (GetAuraAbilitySystemComponent())

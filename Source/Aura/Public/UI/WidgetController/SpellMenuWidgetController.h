@@ -44,6 +44,9 @@ public:
 	void SpellGlobeSelected(const FGameplayTag& AbilityTag);
 
 	UFUNCTION(BlueprintCallable, Category = "GAS|SpellMenuController")
+	void SpellGlobeDeselect();
+
+	UFUNCTION(BlueprintCallable, Category = "GAS|SpellMenuController")
 	void SpendPointButtonPressed();
 
 private:
