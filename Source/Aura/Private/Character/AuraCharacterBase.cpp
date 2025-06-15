@@ -54,7 +54,7 @@ void AAuraCharacterBase::Die()
 
 FVector AAuraCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	const FAuraGameplayTags AuraGameplayTags = FAuraGameplayTags::Get();
+	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
 	if (MontageTag.MatchesTagExact(AuraGameplayTags.CombatSocket_Weapon) && IsValid(Weapon))
 	{
 		return Weapon->GetSocketLocation(WeaponTipSocketName);

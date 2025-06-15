@@ -261,6 +261,10 @@ public:
 	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
 
 private:
+	void HandleIncomingDamage(const FEffectProperties& Props);
+	void HandleIncomingXP(const FEffectProperties& Props);
+	void HandleDebuff(const FEffectProperties& Props);
+	
 	// 通过PostGameplayEffectExecute，将当前执行的GE的属性保存为结构体
 	static void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props);
 
