@@ -169,6 +169,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 	// 完成Model、View、Controller的绑定及初始化
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
 	AttributeSet = AuraPlayerState->GetAttributeSet();
+	// ASC注册成功后通知DebuffNiagaraComponent
+	OnASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
 
 	if(AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
 	{

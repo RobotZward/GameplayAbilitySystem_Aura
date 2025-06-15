@@ -254,7 +254,8 @@ void UAuraAttributeSet::HandleDebuff(const FEffectProperties& Props)
 	// Granted Tag
 	UTargetTagsGameplayEffectComponent& GrantedTargetComp = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer GrantedTags;
-	GrantedTags.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
+	// 此处不能直接使用GrantedTags.AddTag，这样会添加至CombinedTags中，其会在之后计算标签时会被清空后重新计算并添加添加
+	GrantedTags.Added.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
 	GrantedTargetComp.SetAndApplyTargetTagChanges(GrantedTags);
 	// Stack Policy
 	Effect->StackingType = EGameplayEffectStackingType::AggregateByTarget;
@@ -263,7 +264,7 @@ void UAuraAttributeSet::HandleDebuff(const FEffectProperties& Props)
 	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers.Add_GetRef(FGameplayModifierInfo());
 	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-	ModifierInfo.Attribute = UAuraAttributeSet::GetIncomingDamageAttribute();
+	ModifierInfo.Attribute = GetIncomingDamageAttribute();
 
 	/*
 	 * Make and apply GE Spec
