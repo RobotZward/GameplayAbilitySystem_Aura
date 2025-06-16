@@ -75,7 +75,7 @@ float GetSafeSetByCaller(const FGameplayEffectSpec& Spec, const FGameplayTag& Ta
 {
 	if (Spec.SetByCallerTagMagnitudes.Find(Tag))
 	{
-		return Spec.GetSetByCallerMagnitude(Tag, true, DefaultValue);
+		return Spec.GetSetByCallerMagnitude(Tag, bWarningIfNotFound, DefaultValue);
 	}
 
 	if (bWarningIfNotFound)
