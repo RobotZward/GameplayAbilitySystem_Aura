@@ -40,6 +40,8 @@ public:
 	void AddCharacterPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupPassiveAbilities);
 
 	// 该函数用于AuraPlayerController中的同名函数，接收GameplayTag并判断激活哪个技能
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
+	// 该函数用于AuraPlayerController中的同名函数，接收GameplayTag并判断激活哪个技能
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	// 该函数用于AuraPlayerController中的同名函数，接收GameplayTag并判断激活哪个技能
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
