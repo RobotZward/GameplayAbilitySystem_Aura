@@ -153,4 +153,12 @@ public:
 	// 使用自定义的结构体FDamageEffectParams应用GE
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static FGameplayEffectContextHandle ApplyDamageEffectByDamageEffectParams(const FDamageEffectParams& DamageEffectParams);
+
+	// 根据给定的信息求出一角度范围内的平均旋转
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary")
+	static TArray<FRotator> EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators);
+
+	// 根据给定的信息求出一角度范围内的平均向量
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary")
+	static TArray<FVector> EvenlySpacedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors);
 };
