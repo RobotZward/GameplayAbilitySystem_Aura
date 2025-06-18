@@ -49,9 +49,6 @@ public:
 	bool bHitReacting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
-	float BaseWalkSpeed = 250.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	float LifeSpan = 5.f;
 
 	UPROPERTY(BlueprintReadWrite, Category="Combat")
@@ -61,6 +58,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo() override;
 	virtual void InitializeDefaultAttributes() const override;
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
 	// 这是Enemy专用的Level，其会在BeginPlay()->UAuraAbilitySystemLibrary::GiveStartupAbilities()中
 	// 将CharacterClassDefaultInfo->StartupAbilities赋予ASC时被使用

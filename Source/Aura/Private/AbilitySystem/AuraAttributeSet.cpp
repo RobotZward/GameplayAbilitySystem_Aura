@@ -261,8 +261,16 @@ void UAuraAttributeSet::HandleDebuff(const FEffectProperties& Props)
 	// Granted Tag
 	UTargetTagsGameplayEffectComponent& GrantedTargetComp = Effect->AddComponent<UTargetTagsGameplayEffectComponent>();
 	FInheritedTagContainer GrantedTags;
+	FGameplayTag DebuffTag = GameplayTags.DamageTypesToDebuffs[DamageType];
 	// 此处不能直接使用GrantedTags.AddTag，这样会添加至CombinedTags中，其会在之后计算标签时会被清空后重新计算并添加添加
-	GrantedTags.Added.AddTag(GameplayTags.DamageTypesToDebuffs[DamageType]);
+	GrantedTags.Added.AddTag(DebuffTag);
+	if (DebuffTag.MatchesTagExact(GameplayTags.Debuff_Stun))
+	{
+		GrantedTags.Added.AddTag(GameplayTags.Player_Block_CursorTrace);
+		GrantedTags.Added.AddTag(GameplayTags.Player_Block_InputHeld);
+		GrantedTags.Added.AddTag(GameplayTags.Player_Block_InputPressed);
+		GrantedTags.Added.AddTag(GameplayTags.Player_Block_InputReleased);
+	}
 	GrantedTargetComp.SetAndApplyTargetTagChanges(GrantedTags);
 	// Stack Policy
 	Effect->StackingType = EGameplayEffectStackingType::AggregateByTarget;
