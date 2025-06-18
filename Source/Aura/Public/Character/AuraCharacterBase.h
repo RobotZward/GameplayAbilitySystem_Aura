@@ -46,6 +46,8 @@ public:
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual FOnASCRegisteredSignature& GetOnASCRegisteredDelegate() override;
 	virtual FOnDeathSignature& GetOnDeathSignature() override;
+	virtual bool IsBeingShocked_Implementation() const override;
+	virtual void SetIsBeingShocked_Implementation(bool bInShocked) override;
 	/** End Combat Interface */
 
 	FOnASCRegisteredSignature OnASCRegisteredDelegate;
@@ -58,10 +60,19 @@ public:
 	TArray<FTaggedMontage> AttackMontages;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Stunned, BlueprintReadOnly)
-	bool bIsStunned;
+	bool bIsStunned = false;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Burned, BlueprintReadOnly)
+	bool bIsBurned = false;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsBeingShocked = false;
 
 	UFUNCTION()
 	virtual void OnRep_Stunned();
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
 
 protected:
 	// Called when the game starts or when spawned
