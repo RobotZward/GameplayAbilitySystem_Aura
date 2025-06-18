@@ -146,6 +146,14 @@ public:
 		const FVector& SphereOrigin
 	);
 
+	// 该函数用来获取距离某点最近的几个Actor
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary")
+	static void GetClosestTargets(
+		int32 MaxTargets,
+		const TArray<AActor*>& Actors,
+		TArray<AActor*>& OutClosestTargets,
+		const FVector& Origin);
+
 	// 该函数通过两个Actor的标签来判断是否应该互相伤害
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsFriend(AActor* FirstActor, AActor* SecondActor);

@@ -99,6 +99,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	USkeletalMeshComponent* GetWeapon();
 
-	virtual FOnASCRegisteredSignature GetOnASCRegisteredDelegate() = 0;
-	virtual FOnDeathSignature GetOnDeathSignature() = 0;
+	virtual FOnASCRegisteredSignature& GetOnASCRegisteredDelegate() = 0;
+	virtual FOnDeathSignature& GetOnDeathSignature() = 0;
 };

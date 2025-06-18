@@ -148,12 +148,12 @@ USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
 	return Weapon;
 }
 
-FOnASCRegisteredSignature AAuraCharacterBase::GetOnASCRegisteredDelegate()
+FOnASCRegisteredSignature& AAuraCharacterBase::GetOnASCRegisteredDelegate()
 {
 	return OnASCRegisteredDelegate;
 }
 
-FOnDeathSignature AAuraCharacterBase::GetOnDeathSignature()
+FOnDeathSignature& AAuraCharacterBase::GetOnDeathSignature()
 {
 	return OnDeathDelegate;
 }

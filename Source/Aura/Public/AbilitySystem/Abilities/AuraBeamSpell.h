@@ -18,6 +18,14 @@ public:
 	void StoreMouseDataInfo(const FHitResult& HitResult);
 	UFUNCTION(BlueprintCallable, Category = "Beam")
 	void StoreOwnerVariables();
+	UFUNCTION(BlueprintCallable)
+	void TraceFirstTarget(const FVector& BeamTargetLocation);
+	UFUNCTION(BlueprintCallable)
+	void StoreAdditionalTarget(TArray<AActor*>& OutAdditionalTargets);
+	UFUNCTION(BlueprintImplementableEvent)
+	void PrimaryTargetDied(AActor* DeadActor);
+	UFUNCTION(BlueprintImplementableEvent)
+	void AdditionalTargetDied(AActor* DeadActor);
 protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
 	FVector MouseHitLocation;
@@ -29,5 +37,8 @@ protected:
 	TObjectPtr<APlayerController> OwnerPlayerController;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Beam")
-	TObjectPtr<ACharacter> OwningCharacter;
+	TObjectPtr<ACharacter> OwnerCharacter;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Beam")
+	int32 MaxNumShockTargets = 5;
 };
