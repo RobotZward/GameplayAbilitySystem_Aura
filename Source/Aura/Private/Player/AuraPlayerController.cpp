@@ -105,6 +105,10 @@ void AAuraPlayerController::SetupInputComponent()
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	const FRotator Rotation = GetControlRotation();
 	const FRotator YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
@@ -121,6 +125,15 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 void AAuraPlayerController::CursorTrace()
 {
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		if (LastActor) LastActor->UnHighlightActor();
+		if (ThisActor) ThisActor->UnHighlightActor();
+		LastActor = nullptr;
+		ThisActor = nullptr;
+		return;
+	}
+	
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 
 	if (!CursorHit.bBlockingHit) return;
@@ -138,6 +151,10 @@ void AAuraPlayerController::CursorTrace()
 void AAuraPlayerController::AbilityInputTagPressed(const FInputActionValue& InputActionValue,
                                                    const FGameplayTag InputTag)
 {
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
 	// 按下的是鼠标左键，判断有没有悬浮在敌人身上
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
@@ -150,6 +167,10 @@ void AAuraPlayerController::AbilityInputTagPressed(const FInputActionValue& Inpu
 void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& InputActionValue,
                                                     const FGameplayTag InputTag)
 {
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+	{
+		return;
+	}
 	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
@@ -185,7 +206,10 @@ void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& Inp
 					bAutoRunning = true;
 				}
 			}
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CacheDestination);
+			if (GetAuraAbilitySystemComponent() && !GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CacheDestination);
+			}
 		}
 		FollowTime = 0.f;
 		bTargeting = false;
@@ -194,6 +218,10 @@ void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& Inp
 
 void AAuraPlayerController::AbilityInputTagHeld(const FInputActionValue& InputActionValue, const FGameplayTag InputTag)
 {
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld))
+	{
+		return;
+	}
 	// 按下的不是鼠标左键，释放技能
 	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
