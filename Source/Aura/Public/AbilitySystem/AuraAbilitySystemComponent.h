@@ -14,6 +14,7 @@ DECLARE_DELEGATE_OneParam(FForEachAbilityDelegate, const FGameplayAbilitySpec&);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChangedSignature, const FGameplayTag& /*AbilityTag*/ ,const FGameplayTag& /*StatusTag*/, int32 /*AbilityLevel*/);
 DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquippedSignature, const FGameplayTag& /*AbilityTag*/, const FGameplayTag& /*Status*/, const FGameplayTag& /*Slot*/, const FGameplayTag& /*PrevSlot*/)
 DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivatePassiveAbilitySignature, const FGameplayTag& /*AbilityTag*/);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FActivatePassiveEffectsSignature, const FGameplayTag& /*AbilityTag*/, bool/*bActivate*/  );
 
 /**
  * 
@@ -34,8 +35,10 @@ public:
 	FAbilityStatusChangedSignature OnAbilityStatusChangedDelegate;
 	// 用于服务器将Ability绑定至新的输入后，客户端进行广播
 	FAbilityEquippedSignature OnAbilityEquippedDelegate;
-	// 用于广播终止技能的通知到PassiveAbility
+	// 用于通知PassiveAbility终止技能
 	FDeactivatePassiveAbilitySignature OnDeactivatePassiveAbilityDelegate;
+	// 用于在PassiveAbility激活或终止时广播
+	FActivatePassiveEffectsSignature OnActivatePassiveEffectsDelegate;
 
 	// Character传入一个StartupAbilities数组，调用该方法来赋予初始能力
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
@@ -90,6 +93,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& Status, const FGameplayTag& Slot, const FGameplayTag& PrevSlot);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastActivatePassiveEffects(const FGameplayTag& AbilityTag, bool bActivate);
 
 	bool GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
 

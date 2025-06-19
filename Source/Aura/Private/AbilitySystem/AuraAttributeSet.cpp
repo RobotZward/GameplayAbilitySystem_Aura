@@ -362,10 +362,13 @@ void UAuraAttributeSet::ShowFloatingText(const FEffectProperties& Props, float D
 		// 而InComingDamage是我们定义的一个Meta Attribute，它不会被复制，因此上述逻辑只会在服务器上执行
 		// 由于客户端上只存在自己的PlayerController，通过GetPlayerController并传入0获取的控制器又不一定是该客户端的PlayerController
 		// 所以即使调用了ClientRPC方法，但由于客户端没有对应PlayerController，也就不会显示伤害数字
-		if (IsValid(Props.SourceCharacter); AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
+		if (IsValid(Props.SourceCharacter))
 		{
-			PC->ClientShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHt, bCriticalHit);
-			return;
+			if (AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.SourceCharacter->Controller))
+			{
+				PC->ClientShowDamageNumber(Damage, Props.TargetCharacter, bBlockedHt, bCriticalHit);
+				return;
+			}
 		}
 		if (IsValid(Props.TargetCharacter); AAuraPlayerController* PC = Cast<AAuraPlayerController>(Props.TargetCharacter->Controller))
 		{
