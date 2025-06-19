@@ -13,6 +13,7 @@ DECLARE_MULTICAST_DELEGATE(FOnAbilityGivenDelegate);
 DECLARE_DELEGATE_OneParam(FForEachAbilityDelegate, const FGameplayAbilitySpec&);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChangedSignature, const FGameplayTag& /*AbilityTag*/ ,const FGameplayTag& /*StatusTag*/, int32 /*AbilityLevel*/);
 DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquippedSignature, const FGameplayTag& /*AbilityTag*/, const FGameplayTag& /*Status*/, const FGameplayTag& /*Slot*/, const FGameplayTag& /*PrevSlot*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivatePassiveAbilitySignature, const FGameplayTag& /*AbilityTag*/);
 
 /**
  * 
@@ -33,6 +34,8 @@ public:
 	FAbilityStatusChangedSignature OnAbilityStatusChangedDelegate;
 	// 用于服务器将Ability绑定至新的输入后，客户端进行广播
 	FAbilityEquippedSignature OnAbilityEquippedDelegate;
+	// 用于广播终止技能的通知到PassiveAbility
+	FDeactivatePassiveAbilitySignature OnDeactivatePassiveAbilityDelegate;
 
 	// Character传入一个StartupAbilities数组，调用该方法来赋予初始能力
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
@@ -49,13 +52,27 @@ public:
 	bool GetStartupAbilitiesGiven() const { return bStartupAbilitiesGiven; }
 	void ForEachAbility(const FForEachAbilityDelegate& Delegate);
 
+	/*
+	 * Convenient functions
+	 */
+	
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetStatusTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	static bool AbilityHasSlot(const FGameplayAbilitySpec& Spec, const FGameplayTag& Slot);
+	static bool AbilityHasAnySlot(const FGameplayAbilitySpec& Spec);
+	static void AssignSlotToAbility(FGameplayAbilitySpec& Spec, const FGameplayTag& Slot);
 	
 	FGameplayTag GetStatusTagFromAbilityTag(const FGameplayTag& AbilityTag);
-	FGameplayTag GetInputTagFromAbilityTag(const FGameplayTag& AbilityTag);
+	FGameplayTag GetSlotFromAbilityTag(const FGameplayTag& AbilityTag);
 	FGameplayAbilitySpec* GetAbilitySpecFromAbilityTag(const FGameplayTag& AbilityTag);
+	bool SlotIsEmpty(const FGameplayTag& Slot);
+	FGameplayAbilitySpec* GetSpecWithSlot(const FGameplayTag& Slot);
+	bool IsPassiveAbility(const FGameplayAbilitySpec& AbilitySpec) const;
+
+	/*
+	 * End Convenient functions
+	 */
 
 	UFUNCTION(BlueprintCallable)
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);
@@ -76,9 +93,9 @@ public:
 
 	bool GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
 
-	void ClearSlot(FGameplayAbilitySpec* AbilitySpec);
+	static void ClearSlotOfAbility(FGameplayAbilitySpec* AbilitySpec);
 
-	void ClearAbilitiesOfSlot(const FGameplayTag& Slot);
+	void ClearAbilityOfSlot(const FGameplayTag& Slot);
 
 	static bool AbilityHasSlot(FGameplayAbilitySpec* AbilitySpec, const FGameplayTag& SlotTag);
 
