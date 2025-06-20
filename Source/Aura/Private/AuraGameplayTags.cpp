@@ -291,6 +291,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Hit React Ability Tag")
 	);
 
+	/*
+	 * Abilities Status
+	 */
+	
 	GameplayTags.Abilities_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Status.Locked"),
 		FString("Locked Status")
@@ -311,6 +315,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FString("Locked Equipped")
 	);
 
+	/*
+	 * Abilities Type
+	 */
+	
 	GameplayTags.Abilities_Type_None = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Type.None"),
 		FString("Type None")
@@ -325,6 +333,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 		FName("Abilities.Type.Passive"),
 		FString("Type Passive")
 	);
+
+	/*
+	 * Offensive Spells
+	 */
 	
 	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Fire.FireBolt"),
@@ -334,6 +346,11 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Lightning_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Lightning.Electrocute"),
 		FString("Electrocute Ability Tag")
+	);
+
+	GameplayTags.Abilities_Arcane_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Arcane.ArcaneShards"),
+		FString("Arcane Shards Ability Tag")
 	);
 
 	/*
