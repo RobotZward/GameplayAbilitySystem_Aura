@@ -20,7 +20,15 @@ public:
 	void CauseDamage(AActor* TargetActor);
 
 	UFUNCTION(BlueprintPure)
-	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;
+	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(
+		AActor* TargetActor = nullptr,
+		FVector InRadialDamageOrigin = FVector::ZeroVector,
+		bool bOverrideKnockbackDirection = false,
+		FVector KnockbackDirectionOverride = FVector::ZeroVector,
+		bool bOverrideDeathImpulse = false,
+		FVector DeathImpulseDirectionOverride = FVector::ZeroVector,
+		bool bOverridePitch = false,
+		float PitchOverride = 0.f) const;
 
 	UFUNCTION(BlueprintPure)
 	float GetDamageAtLevel() const;
@@ -52,8 +60,6 @@ protected:
 	float RadialDamageInnerRadius = 0.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Radial")
 	float RadialDamageOuterRadius = 0.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage|Radial")
-	FVector RadialDamageOrigin = FVector::ZeroVector;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	FScalableFloat DamageCurve;

@@ -189,7 +189,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetLivePlayersWithinRadius(
 		const UObject* WorldContextObject,
-		UPARAM(ref) TArray<AActor*>& OutOverlappingActors,
+		TArray<AActor*>& OutOverlappingActors,
 		const TArray<AActor*>& ActorsToIgnore,
 		float Radius,
 		const FVector& SphereOrigin
