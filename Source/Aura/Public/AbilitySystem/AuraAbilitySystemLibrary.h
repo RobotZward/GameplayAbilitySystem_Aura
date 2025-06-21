@@ -24,6 +24,11 @@ class AURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
+
+	/*
+	 * Widget Controller
+	 */
+	
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static bool MakeWidgetControllerParams(
 		const UObject* WorldContextObject,
@@ -40,6 +45,10 @@ public:
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
 
+	/*
+	 * Character Class Defaults
+	 */
+	
 	// 通过传入的ECharacterClass枚举、Level、ASC，从AAuraGameModeBase中获取UCharacterClassInfo，并使用GE初始化Attributes
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
@@ -61,7 +70,7 @@ public:
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 Level);
 
 	/*
-	 * FAuraGameplayEffectContext
+	 * FAuraGameplayEffectContext Getters
 	 */
 	
 	// 该函数用来在蓝图中获取bIsBlickedHit
@@ -100,6 +109,26 @@ public:
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static FVector GetKnockbackForce(const FGameplayEffectContextHandle& EffectContextHandle);
 
+	// 该函数用来在蓝图中获取bIsRadialDamage
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static bool IsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	// 该函数用来在蓝图中获取RadialDamageInnerRadius
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	// 该函数用来在蓝图中获取RadialDamageOuterRadius
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	// 该函数用来在蓝图中获取RadialDamageOrigin
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static FVector GetRadialDamageOrigin(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/*
+	 * FAuraGameplayEffectContext Setters
+	 */
+
 	// 该函数用来在蓝图中设置bIsBlickedHit
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static void SetIsBlockedHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const bool bIsBlockedHit);
@@ -135,6 +164,26 @@ public:
 	// 该函数用来在蓝图中设置KnockbackForce
 	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
 	static void SetKnockbackForce(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& KnockbackForce);
+
+	// 该函数用来在蓝图中获取bIsRadialDamage
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetIsRadialDamage(FGameplayEffectContextHandle& EffectContextHandle, const bool bIsRadialDamage);
+
+	// 该函数用来在蓝图中获取RadialDamageInnerRadius
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageInnerRadius(FGameplayEffectContextHandle& EffectContextHandle, const float RadialDamageInnerRadius);
+
+	// 该函数用来在蓝图中获取RadialDamageOuterRadius
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageOuterRadius(FGameplayEffectContextHandle& EffectContextHandle, const float RadialDamageOuterRadius);
+
+	// 该函数用来在蓝图中获取RadialDamageOrigin
+	UFUNCTION(BlueprintPure, Category="AuraAbilitySystemLibrary|GameplayEffects")
+	static void SetRadialDamageOrigin(FGameplayEffectContextHandle& EffectContextHandle, const FVector& RadialDamageOrigin);
+
+	/*
+	 * Gameplay Mechanics
+	 */
 	
 	// 该函数用来获取一定范围内bDead为false的Character
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|GameplayMechanics")

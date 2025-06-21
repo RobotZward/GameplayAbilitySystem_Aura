@@ -27,6 +27,10 @@ public:
 	AAuraCharacterBase();
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	// 重写TakeDamage，实现的功能如下：
+	// 在ExecCalc中绑定一个Lambda代理，用来接收一个计算后的伤害；之后调用ApplyRadialDamageWithFalloff来计算一个径向衰减伤害
+	// 重写TakeDamage，当接收到该伤害后重新广播给ExecCalc
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
@@ -47,13 +51,15 @@ public:
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual FOnASCRegisteredSignature& GetOnASCRegisteredDelegate() override;
-	virtual FOnDeathSignature& GetOnDeathSignature() override;
 	virtual bool IsBeingShocked_Implementation() const override;
 	virtual void SetIsBeingShocked_Implementation(bool bInShocked) override;
+	virtual FOnDeathSignature& GetOnDeathSignature() override;
+	virtual FOnTakeDamageSignature& GetOnTakeDamageSignature() override;
 	/** End Combat Interface */
 
 	FOnASCRegisteredSignature OnASCRegisteredDelegate;
 	FOnDeathSignature OnDeathDelegate;
+	FOnTakeDamageSignature OnTakeDamageDelegate;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);

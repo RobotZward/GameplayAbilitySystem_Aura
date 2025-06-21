@@ -63,6 +63,15 @@ void AAuraCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 	DOREPLIFETIME(AAuraCharacterBase, bIsBeingShocked);
 }
 
+float AAuraCharacterBase::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+
+	const float DamageTaken =  Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnTakeDamageDelegate.Broadcast(DamageTaken);
+	return DamageTaken;
+}
+
 void AAuraCharacterBase::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bIsStunned = NewCount > 0;
@@ -192,6 +201,11 @@ FOnASCRegisteredSignature& AAuraCharacterBase::GetOnASCRegisteredDelegate()
 FOnDeathSignature& AAuraCharacterBase::GetOnDeathSignature()
 {
 	return OnDeathDelegate;
+}
+
+FOnTakeDamageSignature& AAuraCharacterBase::GetOnTakeDamageSignature()
+{
+	return OnTakeDamageDelegate;
 }
 
 bool AAuraCharacterBase::IsBeingShocked_Implementation() const

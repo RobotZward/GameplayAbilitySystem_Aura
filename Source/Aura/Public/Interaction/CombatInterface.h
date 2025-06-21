@@ -14,6 +14,7 @@ class UAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegisteredSignature, UAbilitySystemComponent*)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeathSignature, AActor*, DeadActor);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnTakeDamageSignature, float /*DamageAmount*/);
 
 USTRUCT(BlueprintType)
 struct FTaggedMontage
@@ -107,4 +108,5 @@ public:
 
 	virtual FOnASCRegisteredSignature& GetOnASCRegisteredDelegate() = 0;
 	virtual FOnDeathSignature& GetOnDeathSignature() = 0;
+	virtual FOnTakeDamageSignature& GetOnTakeDamageSignature() = 0;
 };

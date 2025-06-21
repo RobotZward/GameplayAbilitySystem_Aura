@@ -10,6 +10,7 @@
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Aura/AuraLogChannels.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 // 使用经典C++定义方式，不需要反射
 struct AuraDamageStatics
@@ -160,6 +161,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 
 	// 构建FAggregatorEvaluateParameters
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
@@ -196,6 +198,29 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		ResistanceValue = FMath::Clamp(ResistanceValue, 0.f, 100.f);
 
 		DamageTypeValue *= (100.f - ResistanceValue) / 100.f;
+
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			if (TScriptInterface<ICombatInterface> CombatInterface = TargetAvatarActor)
+			{
+				CombatInterface->GetOnTakeDamageSignature().AddLambda([&DamageTypeValue](float DamageAmount)
+				{
+					DamageTypeValue = DamageAmount;
+				});
+			}
+			UGameplayStatics::ApplyRadialDamageWithFalloff(
+				TargetAvatarActor,
+				DamageTypeValue,
+				0.f,
+				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.f,
+				UDamageType::StaticClass(),
+				TArray<AActor*>(),
+				SourceAvatarActor,
+				nullptr);
+		}
 		
 		Damage += DamageTypeValue;
 	}
@@ -208,8 +233,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const bool bBlocked = FMath::RandRange(1, 100) < TargetBlockChance;
 	// If block, halve the damage
 	Damage = bBlocked ? Damage / 2.f : Damage;
-
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+	
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bBlocked);
 
 	/*
