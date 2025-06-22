@@ -573,3 +573,39 @@ TArray<FVector> UAuraAbilitySystemLibrary::EvenlySpacedVectors(const FVector& Fo
 	}
 	return Vectors;
 }
+
+void UAuraAbilitySystemLibrary::SetIsRadialDamageEffectParam(FDamageEffectParams& DamageEffectParams, bool bIsRadial, float InnerRadius, float OuterRadius, FVector Origin)
+{
+	DamageEffectParams.bIsRadialDamage = bIsRadial;
+	DamageEffectParams.RadialDamageInnerRadius = InnerRadius;
+	DamageEffectParams.RadialDamageOuterRadius = OuterRadius;
+	DamageEffectParams.RadialDamageOrigin = Origin;
+}
+
+void UAuraAbilitySystemLibrary::SetKnockbackDirection(FDamageEffectParams& DamageEffectParams,
+	FVector KnockbackDirection, float OverrideMagnitude)
+{
+	KnockbackDirection.Normalize();
+	if (OverrideMagnitude > 0.f)
+	{
+		DamageEffectParams.KnockbackForceMagnitude = OverrideMagnitude;
+	}
+	DamageEffectParams.KnockbackForce = KnockbackDirection * DamageEffectParams.KnockbackForceMagnitude;
+}
+
+void UAuraAbilitySystemLibrary::SetDeathImpulseDirection(FDamageEffectParams& DamageEffectParams,
+	FVector DeathImpulseDirection, float OverrideMagnitude)
+{
+	DeathImpulseDirection.Normalize();
+	if (OverrideMagnitude > 0.f)
+	{
+		DamageEffectParams.DeathImpulseMagnitude = OverrideMagnitude;
+	}
+	DamageEffectParams.DeathImpulse = DeathImpulseDirection * DamageEffectParams.DeathImpulseMagnitude;
+}
+
+void UAuraAbilitySystemLibrary::SetTargetEffectParamASC(FDamageEffectParams& DamageEffectParams,
+	UAbilitySystemComponent* InASC)
+{
+	DamageEffectParams.TargetAbilitySystemComponent = InASC;
+}

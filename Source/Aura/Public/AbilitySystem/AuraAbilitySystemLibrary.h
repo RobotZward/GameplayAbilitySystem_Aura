@@ -218,4 +218,20 @@ public:
 	// 根据给定的信息求出一角度范围内的平均向量
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary")
 	static TArray<FVector> EvenlySpacedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors);
+
+	/*
+	 * Damage Effect Params
+	 */
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffectParams")
+	static void SetIsRadialDamageEffectParam(UPARAM(ref) FDamageEffectParams& DamageEffectParams, bool bIsRadial, float InnerRadius, float OuterRadius, FVector Origin);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffectParams")
+	static void SetKnockbackDirection(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector KnockbackDirection, float OverrideMagnitude = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffectParams")
+	static void SetDeathImpulseDirection(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector DeathImpulseDirection, float OverrideMagnitude = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|DamageEffectParams")
+	static void SetTargetEffectParamASC(UPARAM(ref) FDamageEffectParams& DamageEffectParams, UAbilitySystemComponent* InASC);
 };
