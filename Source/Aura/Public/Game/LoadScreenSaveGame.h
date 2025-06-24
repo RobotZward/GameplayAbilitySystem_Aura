@@ -17,6 +17,42 @@ enum ESaveSlotStatus
 	Taken
 };
 
+/**
+ * 在保存数据时，如果直接使用指针，则会保存其当前的内存地址。下次打开时系统分配的内存很可能会变化，这是未定义的行为。
+ * 因此应采用类似的方法，使用结构体数组保存数据。
+ */
+USTRUCT()
+struct FSavedActor
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName ActorName = FName();
+
+	UPROPERTY()
+	FTransform Transform = FTransform();
+
+	// 从Actor中序列化数据，仅适用于标记为SaveGame的情况
+	UPROPERTY(SaveGame)
+	TArray<uint8> Bytes;
+};
+
+inline bool operator==(const FSavedActor& Left, const FSavedActor& Right)
+{
+	return Left.ActorName == Right.ActorName;
+}
+
+USTRUCT()
+struct FSavedMap
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString MapAssetName = FString();
+
+	TArray<FSavedActor> SavedActors;
+};
+
 USTRUCT(BlueprintType)
 struct FSavedAbility
 {
@@ -114,4 +150,14 @@ public:
 
 	UPROPERTY()
 	TArray<FSavedAbility> SavedAbilities;
+
+	/*
+	 * Maps & Actors
+	 */
+
+	UPROPERTY()
+	TArray<FSavedMap> SavedMaps;
+
+	FSavedMap GetSavedMapWithMapName(const FString& InMapName);
+	bool HasMap(const FString& InMapName);
 };
