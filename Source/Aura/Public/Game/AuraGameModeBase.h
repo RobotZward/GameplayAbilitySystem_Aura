@@ -34,6 +34,8 @@ public:
 	static void DeleteSlot(UMVVM_LoadSlot* LoadSlot, int32 SlotIndex);
 	// 根据LoadSlot切换地图
 	void TravelToMap(UMVVM_LoadSlot* LoadSlot);
+	// 保存数据到UAuraGameInstance
+	void SaveDataToGameInstance(UMVVM_LoadSlot* LoadSlot);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Save Game")
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
@@ -43,9 +45,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<UWorld> DefaultMap;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName DefaultPlayerStartTag;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
+
+	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
 protected:
 	virtual void BeginPlay() override;

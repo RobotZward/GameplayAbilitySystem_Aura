@@ -33,6 +33,9 @@ public:
 	UPROPERTY()
 	TEnumAsByte<ESaveSlotStatus> SlotStatus;
 
+	UPROPERTY()
+	FName PlayerStartTag;
+
 	void SetLoadSlotName(FString InSlotName);
 	FString GetLoadSlotName() const { return LoadSlotName; }
 
