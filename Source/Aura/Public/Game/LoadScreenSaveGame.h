@@ -32,8 +32,8 @@ struct FSavedActor
 	UPROPERTY()
 	FTransform Transform = FTransform();
 
-	// 从Actor中序列化数据，仅适用于标记为SaveGame的情况
-	UPROPERTY(SaveGame)
+	// 存储从Actor中序列化的数据，仅适用于标记为SaveGame的成员变量
+	UPROPERTY()
 	TArray<uint8> Bytes;
 };
 
@@ -50,6 +50,7 @@ struct FSavedMap
 	UPROPERTY()
 	FString MapAssetName = FString();
 
+	UPROPERTY()
 	TArray<FSavedActor> SavedActors;
 };
 
