@@ -50,6 +50,8 @@ public:
 
 protected:
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+
+	void LoadProgress();
 	
 private:
 	UPROPERTY(VisibleAnywhere)
