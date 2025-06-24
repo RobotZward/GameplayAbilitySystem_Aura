@@ -15,6 +15,7 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangeSignature, int32, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLevelChangeSignature, int32, NewValue, bool, bLevelUpEffect);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoDelegate, const FAuraAbilityInfo&, AbilityInfo);
 
 USTRUCT(BlueprintType)

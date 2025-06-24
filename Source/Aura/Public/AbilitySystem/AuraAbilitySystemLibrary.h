@@ -8,6 +8,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class ULoadScreenSaveGame;
 struct FDamageEffectParams;
 class UAbilityInfo;
 class AAuraHUD;
@@ -52,6 +53,10 @@ public:
 	// 通过传入的ECharacterClass枚举、Level、ASC，从AAuraGameModeBase中获取UCharacterClassInfo，并使用GE初始化Attributes
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* ASC);
+
+	// 从SaveData中加载数据并通过SetByCaller应用至玩家
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
+	static void InitializeDefaultAttributesFromSaveData(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, ULoadScreenSaveGame* SaveData);
 
 	// 用于初始化Enemy的StartupAbilities
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")

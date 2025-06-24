@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AuraAbilitySystemComponent.generated.h"
 
+class ULoadScreenSaveGame;
 struct FGameplayAbilitySpec;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
@@ -40,6 +41,8 @@ public:
 	// 用于在PassiveAbility激活或终止时广播
 	FActivatePassiveEffectsSignature OnActivatePassiveEffectsDelegate;
 
+	// 从SaveData中读取FSavedAbility并初始化
+	void AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveGame);
 	// Character传入一个StartupAbilities数组，调用该方法来赋予初始能力
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	// Character传入一个StartupPassiveAbilities数组，调用该方法来赋予初始能力并执行

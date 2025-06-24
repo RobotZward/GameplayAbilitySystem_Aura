@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/SaveGame.h"
 #include "LoadScreenSaveGame.generated.h"
+
+class UGameplayAbility;
 
 UENUM(BlueprintType)
 enum ESaveSlotStatus
@@ -13,6 +16,35 @@ enum ESaveSlotStatus
 	EnterName,
 	Taken
 };
+
+USTRUCT(BlueprintType)
+struct FSavedAbility
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "SavedAbiltiyInfo")
+	TSubclassOf<UGameplayAbility> GameplayAbility;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "SavedAbiltiyInfo")
+	FGameplayTag AbilityTag = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "SavedAbiltiyInfo")
+	FGameplayTag AbilityStatus = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "SavedAbiltiyInfo")
+	FGameplayTag AbilitySlot = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "SavedAbiltiyInfo")
+	FGameplayTag AbilityType = FGameplayTag();
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "SavedAbiltiyInfo")
+	int32 Level = 1;
+};
+
+inline bool operator==(const FSavedAbility& Left, const FSavedAbility& Right)
+{
+	return Left.AbilityTag.MatchesTagExact(Right.AbilityTag);
+}
 
 /**
  * 
@@ -51,7 +83,7 @@ public:
 	// Player Data
 	
 	UPROPERTY()
-	int32 PlayerLevel = 0;
+	int32 PlayerLevel = 1;
 
 	UPROPERTY()
 	int32 XP = 0;
@@ -75,4 +107,11 @@ public:
 	
 	UPROPERTY()
 	float Vigor = 0.f;
+
+	/*
+	 * Abilities
+	 */
+
+	UPROPERTY()
+	TArray<FSavedAbility> SavedAbilities;
 };

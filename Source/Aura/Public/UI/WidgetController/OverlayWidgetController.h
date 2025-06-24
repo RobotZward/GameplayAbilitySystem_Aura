@@ -66,7 +66,7 @@ public:
 	FOnAttributeChangeSignature OnXPPercentChangedDelegate;
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
-	FOnPlayerStatChangeSignature OnLevelChangedDelegate;
+	FOnLevelChangeSignature OnLevelChangedDelegate;
 	
 
 protected:

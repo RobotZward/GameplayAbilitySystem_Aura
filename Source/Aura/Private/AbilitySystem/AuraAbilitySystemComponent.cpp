@@ -10,11 +10,43 @@
 #include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Aura/AuraLogChannels.h"
+#include "Game/LoadScreenSaveGame.h"
 #include "Interaction/PlayerInterface.h"
 
 void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UAuraAbilitySystemComponent::ClientEffectApplied);
+}
+
+void UAuraAbilitySystemComponent::AddCharacterAbilitiesFromSaveData(ULoadScreenSaveGame* SaveGame)
+{
+	for (const FSavedAbility& Data : SaveGame->SavedAbilities)
+	{
+		const TSubclassOf<UGameplayAbility> LoadedAbility = Data.GameplayAbility;
+
+		FGameplayAbilitySpec LoadedAbilitySpec = FGameplayAbilitySpec(LoadedAbility, Data.Level);
+
+		LoadedAbilitySpec.DynamicAbilityTags.AddTag(Data.AbilitySlot);
+		LoadedAbilitySpec.DynamicAbilityTags.AddTag(Data.AbilityStatus);
+		if (FAuraGameplayTags::Get().Abilities_Type_Offensive.MatchesTagExact(Data.AbilityType))
+		{
+			GiveAbility(LoadedAbilitySpec);
+		}
+		else if (FAuraGameplayTags::Get().Abilities_Type_Passive.MatchesTagExact(Data.AbilityType))
+		{
+			if (FAuraGameplayTags::Get().Abilities_Status_Equipped.MatchesTagExact(Data.AbilityStatus))
+			{
+				GiveAbilityAndActivateOnce(LoadedAbilitySpec);
+				OnActivatePassiveEffectsDelegate.Broadcast(Data.AbilityTag, true);
+			}
+			else
+			{
+				GiveAbility(LoadedAbilitySpec);
+			}
+		}
+	}
+	bStartupAbilitiesGiven = true;
+	OnAbilityGivenDelegate.Broadcast();
 }
 
 void UAuraAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
@@ -39,6 +71,7 @@ void UAuraAbilitySystemComponent::AddCharacterPassiveAbilities(
 	for(const TSubclassOf<UGameplayAbility> AbilityClass : StartupPassiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		AbilitySpec.DynamicAbilityTags.AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
 		GiveAbilityAndActivateOnce(AbilitySpec);
 	}
 }

@@ -11,7 +11,9 @@
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "AbilitySystem/AuraAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "Camera/CameraComponent.h"
 #include "Game/AuraGameModeBase.h"
 #include "Game/LoadScreenSaveGame.h"
@@ -51,10 +53,6 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	// Init ability actor info for the Server
 	InitAbilityActorInfo();
 	LoadProgress();
-	
-	// 调用父类函数将StartupAbilities添加至ASC并激活
-	// TODO: Load in Ability from disk
-	AddCharacterAbilities();
 }
 
 void AAuraCharacter::LoadProgress()
@@ -65,22 +63,28 @@ void AAuraCharacter::LoadProgress()
 	{
 		ULoadScreenSaveGame* SaveData = AuraGameMode->RetrieveInGameSaveData();
 		if (SaveData == nullptr) return;
-
-		if (AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>())
-		{
-			AuraPlayerState->SetLevel(SaveData->PlayerLevel);
-			AuraPlayerState->SetXP(SaveData->XP);
-			AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
-			AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
-		}
+		
 		if (SaveData->bFirstTimeLoad)
 		{
 			InitializeDefaultAttributes();
+			// 调用父类函数将StartupAbilities添加至ASC并激活
 			AddCharacterAbilities();
 		}
 		else
 		{
+			if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				AuraASC->AddCharacterAbilitiesFromSaveData(SaveData);
+			}
 			
+			if (AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>())
+			{
+				AuraPlayerState->SetLevel(SaveData->PlayerLevel);
+				AuraPlayerState->SetXP(SaveData->XP);
+				AuraPlayerState->SetAttributePoints(SaveData->AttributePoints);
+				AuraPlayerState->SetSpellPoints(SaveData->SpellPoints);
+			}
+			UAuraAbilitySystemLibrary::InitializeDefaultAttributesFromSaveData(this, GetAbilitySystemComponent(), SaveData);
 		}
 	}
 }
@@ -254,6 +258,37 @@ void AAuraCharacter::SaveProgress_Implementation(const FName& CheckpointTag)
 		SaveData->Vigor = UAuraAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
 
 		SaveData->bFirstTimeLoad = false;
+		
+		/*
+		 * Abilities
+		 */
+
+		if (HasAuthority())
+		{
+			if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				FForEachAbilityDelegate OnSaveAbilityDelegate;
+				SaveData->SavedAbilities.Empty();
+				OnSaveAbilityDelegate.BindLambda([this, AuraASC, SaveData](const FGameplayAbilitySpec& AbilitySpec)
+				{
+					FGameplayTag AbilityTag = AuraASC->GetAbilityTagFromSpec(AbilitySpec);
+					UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfo(this);
+					FAuraAbilityInfo Info = AbilityInfo->FindAbilityInfoForTag(AbilityTag);
+
+					FSavedAbility SavedAbility;
+					SavedAbility.GameplayAbility = Info.AbilityClass;
+					SavedAbility.AbilityTag = AbilityTag;
+					SavedAbility.AbilitySlot = AuraASC->GetSlotFromAbilityTag(AbilityTag);
+					SavedAbility.AbilityStatus = AuraASC->GetStatusTagFromAbilityTag(AbilityTag);
+					SavedAbility.AbilityType = Info.AbilityType;
+					SavedAbility.Level = AbilitySpec.Level;
+
+					SaveData->SavedAbilities.AddUnique(SavedAbility);
+				});
+				AuraASC->ForEachAbility(OnSaveAbilityDelegate);
+			}
+		}
+		
 		AuraGameMode->SaveInGameProgressData(SaveData);
 	}
 }

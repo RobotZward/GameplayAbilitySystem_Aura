@@ -34,6 +34,7 @@ public:
 	virtual void Die(const FVector& DeathImpulse) override;
 	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
 	virtual AActor* GetCombatTarget_Implementation() const override;
+	virtual void SetIsBeingShocked_Implementation(bool bInShocked) override;
 	/** End Combat Interface */
 
 	UPROPERTY(BlueprintAssignable)

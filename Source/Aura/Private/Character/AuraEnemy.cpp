@@ -48,6 +48,7 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 	AuraAIController->RunBehaviorTree(BehaviorTree);
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Stun"), false);
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Shocked"), false);
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
@@ -85,6 +86,13 @@ void AAuraEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
 AActor* AAuraEnemy::GetCombatTarget_Implementation() const
 {
 	return CombatTarget;
+}
+
+void AAuraEnemy::SetIsBeingShocked_Implementation(bool bInShocked)
+{
+	Super::SetIsBeingShocked_Implementation(bInShocked);
+
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Shocked"), bIsBeingShocked);
 }
 
 void AAuraEnemy::BeginPlay()

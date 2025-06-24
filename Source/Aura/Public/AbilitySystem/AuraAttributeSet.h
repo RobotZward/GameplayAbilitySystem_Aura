@@ -274,5 +274,6 @@ private:
 
 	// 这两个boolean用来表示最大生命值的更改是否由LevelUp触发
 	bool bTopOffHealth = false;
+	// 这两个boolean用来表示最大法力值的更改是否由LevelUp触发
 	bool bTopOffMana = false;
 };

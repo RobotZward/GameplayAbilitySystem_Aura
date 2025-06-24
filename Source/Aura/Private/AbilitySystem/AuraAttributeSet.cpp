@@ -111,13 +111,19 @@ void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute,
 
 	if (Attribute == GetMaxHealthAttribute() && bTopOffHealth)
 	{
-		SetHealth(NewValue);
-		bTopOffHealth = false;
+		if (!FMath::IsNearlyEqual(OldValue, NewValue))
+		{
+			SetHealth(NewValue);
+			bTopOffHealth = false;
+		}
 	}
 	if (Attribute == GetMaxManaAttribute() && bTopOffMana)
 	{
-		SetMana(GetMaxMana());
-		bTopOffMana = false;
+		if (!FMath::IsNearlyEqual(OldValue, NewValue))
+		{
+			SetMana(GetMaxMana());
+			bTopOffMana = false;
+		}
 	}
 }
 
@@ -168,8 +174,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 	{
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-
-		// 如果生命值不小于
+		
 		const bool bFatal = NewHealth <= 0.f;
 		if (bFatal)
 		{
@@ -213,8 +218,7 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 {
 	const float LocalIncomingXP = GetIncomingXP();
 	SetIncomingXP(0.f);
-		
-	// TODO: See if we could Level Up
+	
 	if (Props.SourceCharacter->Implements<UPlayerInterface>() && Props.SourceCharacter->Implements<UCombatInterface>())
 	{
 		const int32 CurrentLevel = ICombatInterface::Execute_GetPlayerLevel(Props.SourceCharacter);
