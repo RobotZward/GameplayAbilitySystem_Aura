@@ -36,6 +36,10 @@ public:
 	void TravelToMap(UMVVM_LoadSlot* LoadSlot);
 	// 保存数据到UAuraGameInstance
 	void SaveDataToGameInstance(UMVVM_LoadSlot* LoadSlot);
+	// 根据GameInstance中的数据读取存档
+	ULoadScreenSaveGame* RetrieveInGameSaveData();
+	// 将SaveData保存到磁盘
+	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Save Game")
 	TSubclassOf<USaveGame> LoadScreenSaveGameClass;
