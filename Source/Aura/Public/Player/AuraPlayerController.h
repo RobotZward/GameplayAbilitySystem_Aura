@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "AuraPlayerController.generated.h"
 
+class IHighlightInterface;
 class AMagicCircle;
 class UNiagaraSystem;
 class UDamageTextComponent;
@@ -17,6 +18,13 @@ class IEnemyInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
 class USplineComponent;
+
+enum class ETargetingStatus : uint8
+{
+	TargetingEnemy,
+	TargetingNonEnemy,
+	NotTargeting
+};
 
 /**
  * 
@@ -63,9 +71,13 @@ private:
 
 	// 每帧调用来检测鼠标命中的Actor并高亮
 	void CursorTrace();
-	TScriptInterface<IEnemyInterface> LastActor;
-	TScriptInterface<IEnemyInterface> ThisActor;
+	UPROPERTY()
+	TObjectPtr<AActor> LastActor;
+	UPROPERTY()
+	TObjectPtr<AActor> ThisActor;
 	FHitResult CursorHit;
+	static void HighlightActor(AActor* InActor);
+	static void UnHighlightActor(AActor* InActor);
 
 	// 用于在AuraInputAction->SetupInputComponent中与InputConfig中的每一个InputAction进行绑定
 	void AbilityInputTagPressed(const FInputActionValue& InputActionValue, const FGameplayTag InputTag);
@@ -87,7 +99,7 @@ private:
 	float FollowTime = 0.f; // 记录鼠标按下后保持的时间
 	float ShortPressThreshold = 0.5f; // 持续时间的阈值，超出之后就不认为进行点击移动
 	bool bAutoRunning = false; // 每帧判断是否移动
-	bool bTargeting = false;
+	ETargetingStatus TargetingStatus = ETargetingStatus::NotTargeting;
 
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f; // 点击移动的到点范围
