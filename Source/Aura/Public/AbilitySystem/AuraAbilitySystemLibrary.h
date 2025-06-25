@@ -8,6 +8,7 @@
 #include "Data/CharacterClassInfo.h"
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class ULootTiers;
 class ULoadScreenSaveGame;
 struct FDamageEffectParams;
 class UAbilityInfo;
@@ -69,6 +70,10 @@ public:
 	// 直接返回AAuraGameModeBase中存储的UAbilityInfo数据
 	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
+
+	// 直接返回AAuraGameModeBase中存储的ULootTiers数据
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary|CharacterClassDefaults", meta = (DefaultToSelf = "WorldContextObject"))
+	static ULootTiers* GetLootTiers(const UObject* WorldContextObject);
 
 	// 根据敌人类别和等级从CharacterClassInfo中获取其奖励经验值
 	UFUNCTION()
@@ -217,11 +222,11 @@ public:
 	static FGameplayEffectContextHandle ApplyDamageEffectByDamageEffectParams(const FDamageEffectParams& DamageEffectParams);
 
 	// 根据给定的信息求出一角度范围内的平均旋转
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="AuraAbilitySystemLibrary")
 	static TArray<FRotator> EvenlySpacedRotators(const FVector& Forward, const FVector& Axis, float Spread, int32 NumRotators);
 
 	// 根据给定的信息求出一角度范围内的平均向量
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemLibrary")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="AuraAbilitySystemLibrary")
 	static TArray<FVector> EvenlySpacedVectors(const FVector& Forward, const FVector& Axis, float Spread, int32 NumVectors);
 
 	/*

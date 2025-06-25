@@ -33,9 +33,38 @@ class AURA_API AAuraEffectActor : public AActor
 
 public:
 	AAuraEffectActor();
+	virtual void Tick(float DeltaSeconds) override;
 
 protected:
 	virtual void BeginPlay() override;
+
+	/*
+	 * Spawn Animation
+	 */
+	UPROPERTY(BlueprintReadWrite)
+	FVector CalculatedLocation;
+	UPROPERTY(BlueprintReadWrite)
+	FRotator CalculatedRotation;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Movement")
+	bool bRotate = false;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Movement")
+	float RotationRate = 45.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Movement")
+	bool bSinusoidalMovement = false;
+	UFUNCTION(BlueprintCallable)
+	void StartSinusoidalMovement();
+	UFUNCTION(BlueprintCallable)
+	void StartRotation();
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Movement")
+	float SineAmplitude = 1.f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Movement")
+	float SinePeriodConstant = 1.f;	// 2 * PI
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Pickup Movement")
+	FVector InitialLocation = FVector();
+	/*
+	 * End Spawn Animation
+	 */
+	
 
 	// 是否在Effect应用后销毁，仅在配置不为Infinite时生效
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Applied Effects")
@@ -71,7 +100,7 @@ protected:
 
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Applied Effects")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Applied Effects")
 	float ActorLevel = 1.f;
 
 	UFUNCTION()
@@ -84,4 +113,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnEndOverlap(AActor* TargetActor);
+
+private:
+	float RunningTime = 0.f;
+	void ItemMovement(float DeltaSeconds);
 };
