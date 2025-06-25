@@ -122,4 +122,7 @@ private:
 	TObjectPtr<AMagicCircle> MagicCircle;
 
 	void UpdateMagicCircleLocation();
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bDrawNavDebugSphere = false;
 };

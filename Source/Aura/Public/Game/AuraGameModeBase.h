@@ -41,7 +41,7 @@ public:
 	// 获取AuraGameInstance中的SlotName和SlotIndex，将SaveData保存到磁盘中的指定存档
 	void SaveInGameProgressData(ULoadScreenSaveGame* SaveObject) const;
 	// 将Map及其中的Actor保存进SaveData，使用了Archive和Serialize功能
-	void SaveWorldState(UWorld* World) const;
+	void SaveWorldState(UWorld* World, const FString& DestinationMapAssetName = FString("")) const;
 	// 根据MapName，从SaveData中读取指定Map数据
 	void LoadWorldState(UWorld* World) const;
 
@@ -61,6 +61,8 @@ public:
 	TMap<FString, TSoftObjectPtr<UWorld>> Maps;
 
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
+
+	FString GetMapNameFromMapAssetName(const FString& MapAssetName) const;
 
 protected:
 	virtual void BeginPlay() override;

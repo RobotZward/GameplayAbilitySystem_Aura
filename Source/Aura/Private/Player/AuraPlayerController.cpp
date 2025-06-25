@@ -217,12 +217,12 @@ void AAuraPlayerController::AbilityInputTagPressed(const FInputActionValue& Inpu
 		if (ThisActor)
 		{
 			TargetingStatus = ThisActor->Implements<UEnemyInterface>() ? ETargetingStatus::TargetingEnemy : ETargetingStatus::TargetingNonEnemy;
-			bAutoRunning = false;
 		}
 		else
 		{
 			TargetingStatus =ETargetingStatus:: NotTargeting;
 		}
+		bAutoRunning = false;
 	}
 	if (GetAuraAbilitySystemComponent()) GetAuraAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
 }
@@ -270,7 +270,12 @@ void AAuraPlayerController::AbilityInputTagReleased(const FInputActionValue& Inp
 
 				for (const FVector& PathPoint : NavPath->PathPoints)
 				{
-					Spline->AddSplinePoint(PathPoint, ESplineCoordinateSpace::World);
+					const FVector& UpPathPoint = FVector(PathPoint.X, PathPoint.Y, PathPoint.Z + 10.f);
+					if (bDrawNavDebugSphere)
+					{
+						DrawDebugSphere(GetWorld(), UpPathPoint, 10.f, 10, FColor::Red, false, 1.f);
+					}
+					Spline->AddSplinePoint(UpPathPoint, ESplineCoordinateSpace::World);
 				}
 				if (NavPath->PathPoints.Num()>0)
 				{
