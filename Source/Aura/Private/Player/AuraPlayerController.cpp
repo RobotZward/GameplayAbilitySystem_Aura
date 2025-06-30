@@ -18,6 +18,8 @@
 #include "Input/AuraInputComponent.h"
 #include "Interaction/EnemyInterface.h"
 #include "Interaction/HighlightInterface.h"
+#include "Interaction/PlayerInterface.h"
+#include "Player/AuraPlayerState.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
@@ -53,6 +55,39 @@ void AAuraPlayerController::HideMagicCircle()
 	if (IsValid(MagicCircle))
 	{
 		MagicCircle->Destroy();
+	}
+}
+
+void AAuraPlayerController::AddSpellPoint(int32 InSpellPoints)
+{
+	if (APawn* PlayerPawn = GetPawn())
+	{
+		if (PlayerPawn->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToSpellPoints(PlayerPawn, InSpellPoints);
+		}
+	}
+}
+
+void AAuraPlayerController::AddAttributePoint(int32 InAttributePoints)
+{
+	if (APawn* PlayerPawn = GetPawn())
+	{
+		if (PlayerPawn->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToAttributePoints(PlayerPawn, InAttributePoints);
+		}
+	}
+}
+
+void AAuraPlayerController::AddPlayerLevel(int32 InLevel)
+{
+	if (APawn* PlayerPawn = GetPawn())
+	{
+		if (PlayerPawn->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToPlayerLevel(PlayerPawn, InLevel);
+		}
 	}
 }
 

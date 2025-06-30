@@ -47,6 +47,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HideMagicCircle();
 
+	/*
+	 * Cheat
+	 */
+	
+	UFUNCTION(Exec, Category="Cheat", meta = (DisplayName = "SetPlayerSpellPoint"))
+	void AddSpellPoint(int32 InSpellPoints);
+
+	UFUNCTION(Exec, Category="Cheat", meta = (DisplayName = "SetPlayerAttributePoint"))
+	void AddAttributePoint(int32 InAttributePoints);
+
+	UFUNCTION(Exec, Category="Cheat", meta = (DisplayName = "SetPlayerLevel"))
+	void AddPlayerLevel(int32 InLevel);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

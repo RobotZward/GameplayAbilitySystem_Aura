@@ -30,4 +30,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy Spawn Point|Enemy Character Class")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy Spawn Point|Enemy Health")
+	bool bOverrideHealth = false ;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Enemy Spawn Point|Enemy Health")
+	float OverrideHealth = 200 ;
 };
